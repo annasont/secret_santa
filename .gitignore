@@ -1,0 +1,6 @@
+__pycache__/
+.vscode/
+*.[oa]
+#*.sqlite3
+*.log
+venv/
