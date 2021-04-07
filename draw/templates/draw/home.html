@@ -1,4 +1,44 @@
 {% extends "draw/base.html" %}
 {% block content %}
-    <h1>Some title</h1>
+    <div class="container pt-5">
+        <div class="jumbotron">
+            <h1 class="display-4">Wylosuj tajemniczego mikołaja!</h1>
+            <p class="lead">Wpisz imiona osób, które biorą udział w losowaniu, oraz ich adresy e-mail. Każdy z uczestników otrzyma maila z imieniem wylosowanej osoby, której będzie robić prezent.</p>
+            </p>
+        </div>
+        <form class="row g-3">
+            <div class="row g-3"></div>
+                <div class="col-sm-1">
+                    <label for="name1" class="col-sm-2 col-form-label">1.</label>
+                </div>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" placeholder="Name" aria-label="Name" id="name1">
+                </div>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" placeholder="E-mail" aria-label="E-mail" id="Email1">
+                </div>
+                <div class="col-sm-1">
+                    <label for="name2" class="col-sm-2 col-form-label">2.</label>
+                </div>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" placeholder="Name" aria-label="Name" id="name2">
+                </div>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" placeholder="E-mail" aria-label="E-mail" id="Email2">
+                </div>
+                <div class="col-sm-1">
+                    <label for="name3" class="col-sm-2 col-form-label">3.</label>
+                </div>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" placeholder="Name" aria-label="Name" id="name3">
+                </div>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" placeholder="E-mail" aria-label="E-mail" id="Email3">
+                </div>
+            <div class="float-right">
+                <button type="submit" class="btn btn-primary">+ Dodaj kolejną osobę</button>
+                <button type="submit" class="btn btn-warning">Losuj</button>
+            </div> 
+        </form>
+    </div>
 {% endblock content %}
