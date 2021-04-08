@@ -5,6 +5,6 @@ from django.shortcuts import render
 def home(request):
     context = {
         'title': 'Home',
-        'no': [1, 2, 3]
+        'no': 3
     }
     return render(request, 'draw/home.html', context)
