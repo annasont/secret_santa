@@ -20,8 +20,10 @@
                     </div>
                 {% endfor %}
             <div class="float-right">
-                <button type="submit" class="btn btn-primary">+ Dodaj kolejną osobę</button>
-                <button type="submit" class="btn btn-warning">Losuj</button>
+                <form action='actionUrl' method='GET'></form>
+                    <button name="addRow" value="1" type="submit" class="btn btn-primary">+ Dodaj kolejną osobę</button>
+                </form>
+                    <button type="submit" class="btn btn-warning">Losuj</button>
             </div> 
         </form>
     </div>
