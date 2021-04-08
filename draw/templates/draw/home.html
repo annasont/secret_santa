@@ -8,17 +8,19 @@
         </div>
         <form class="row g-3">
             <div class="row g-3"></div>
-                {% for i in no %}
-                    <div class="col-sm-1">
-                        <label for="name1" class="col-sm-2 col-form-label">{{ i }}.</label>
-                    </div>
-                    <div class="col-sm-3">
-                        <input type="text" class="form-control" placeholder="Name" aria-label="Name" id="name1">
-                    </div>
-                    <div class="col-sm-8">
-                        <input type="text" class="form-control" placeholder="E-mail" aria-label="E-mail" id="Email1">
-                    </div>
+                {% with ''|center:no as range %}
+                {% for _ in range %}
+                        <div class="col-sm-1">
+                            <label for="name1" class="col-sm-2 col-form-label">{{ forloop.counter }}.</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" placeholder="Name" aria-label="Name" id="name1">
+                        </div>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" placeholder="E-mail" aria-label="E-mail" id="Email1">
+                        </div>
                 {% endfor %}
+                {% endwith %}
             <div class="float-right">
                 <form action='actionUrl' method='GET'></form>
                     <button name="addRow" value="1" type="submit" class="btn btn-primary">+ Dodaj kolejną osobę</button>
