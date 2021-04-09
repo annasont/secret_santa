@@ -7,7 +7,8 @@
             <p>{{ x }}</p>
         </div>
         <form class="row g-3">
-            <div class="row g-3"></div>
+            <div class="row g-3">
+            </div>
                 {% with ''|center:no as range %}
                 {% for _ in range %}
                         <div class="col-sm-1">
@@ -21,12 +22,13 @@
                         </div>
                 {% endfor %}
                 {% endwith %}
-            <div class="float-right">
-                <form action='actionUrl' method='GET'></form>
-                    <button name="rows" value="{{ no }}" type="submit" class="btn btn-primary">+ Dodaj kolejną osobę</button>
+        
+            <div class="row g-3">
+                <form class="row g-3" action='actionUrl' method='GET'></form>
+                    <button name="rows" value="{{ valueRowsButton }}" type="submit" class="btn btn-primary">+ Dodaj kolejną osobę</button>
                 </form>
                     <button type="submit" class="btn btn-warning">Losuj</button>
             </div> 
-        </form>
+        </form >
     </div>
 {% endblock content %}

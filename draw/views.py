@@ -4,12 +4,13 @@ from django.shortcuts import render
 
 def home(request):
     if request.GET and request.GET['rows']:
-        no = int(request.GET['rows']) + 1
+        no = int(request.GET['rows'])
     else:
         no = 3
   
     context = {
         'title': 'Home',
-        'no': no
+        'no': no,
+        'valueRowsButton': no + 1
     }
     return render(request, 'draw/home.html', context)
