@@ -4,7 +4,7 @@
         <div class="jumbotron">
             <h1 class="display-4">Wylosuj tajemniczego mikołaja!</h1>
             <p class="lead">Wpisz imiona osób, które biorą udział w losowaniu, oraz ich adresy e-mail. Każdy z uczestników otrzyma maila z imieniem wylosowanej osoby, której będzie robić prezent.</p>
-            </p>
+            <p>{{ x }}</p>
         </div>
         <form class="row g-3">
             <div class="row g-3"></div>
@@ -23,7 +23,7 @@
                 {% endwith %}
             <div class="float-right">
                 <form action='actionUrl' method='GET'></form>
-                    <button name="addRow" value="1" type="submit" class="btn btn-primary">+ Dodaj kolejną osobę</button>
+                    <button name="rows" value="{{ no }}" type="submit" class="btn btn-primary">+ Dodaj kolejną osobę</button>
                 </form>
                     <button type="submit" class="btn btn-warning">Losuj</button>
             </div> 
