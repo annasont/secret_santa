@@ -22,13 +22,19 @@
                         </div>
                 {% endfor %}
                 {% endwith %}
-        
+
             <div class="row g-3">
-                <form class="row g-3" action='actionUrl' method='GET'></form>
+                <form class="row g-3" action='' method='GET'></form>
                     <button name="rows" value="{{ valueRowsButton }}" type="submit" class="btn btn-primary">+ Dodaj kolejną osobę</button>
+                </form>
+        </form >      
+                <form class="row g-2" method='POST' action=''>
+                    {% csrf_token %}
+                    <input type="hidden" id="minusRows" name="minusRows" value="1">
+                    <button name="minusRowsButton" type="submit" class="btn btn-primary">- Usuń ostatni rząd</button>
                 </form>
                     <button type="submit" class="btn btn-warning">Losuj</button>
             </div> 
-        </form >
+        
     </div>
 {% endblock content %}
