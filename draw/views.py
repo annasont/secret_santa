@@ -3,21 +3,29 @@ from django.shortcuts import render
 
 def home(request):
     valueRowsButtonInRow = 4
-    valueRowsButtonToggle = 4
+    valueRowsButtonToggle = 2
     no = 3
     add = True
     substract = False
-
+    message = ''
 
     if request.GET and request.GET['rows']:
-        no = int(request.GET['rows'])
+        if int(request.GET['rows']) < 3:
+            message = 'no can do'
+            no = 3
+        else:
+            no = int(request.GET['rows'])
         valueRowsButtonInRow = no + 1
         valueRowsButtonToggle = no - 1
         add = True
         substract = False
     
     if request.POST and request.POST.get('minusRows'):
-        no = int(request.GET['rows'])
+        if int(request.GET['rows']) < 3:
+            message = 'no can do'
+            no = 3
+        else:
+            no = int(request.GET['rows'])
         valueRowsButtonInRow = no - 1
         valueRowsButtonToggle = no + 1
         add = False
@@ -29,6 +37,7 @@ def home(request):
         'valueRowsButtonInRow': valueRowsButtonInRow,
         'valueRowsButtonToggle': valueRowsButtonToggle,
         'add': add,
-        'subtract': substract
+        'subtract': substract,
+        'message': message
     }
     return render(request, 'draw/home.html', context)
