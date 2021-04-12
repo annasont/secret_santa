@@ -30,6 +30,12 @@ def home(request):
         valueRowsButtonToggle = no + 1
         add = False
         substract = True
+
+    #testowanie
+    x = ''
+    if request.POST:
+        x = request.POST
+    #koniec
   
     context = {
         'title': 'Home',
@@ -38,6 +44,7 @@ def home(request):
         'valueRowsButtonToggle': valueRowsButtonToggle,
         'add': add,
         'subtract': substract,
-        'message': message
+        'message': message,
+        'x': x
     }
     return render(request, 'draw/home.html', context)
