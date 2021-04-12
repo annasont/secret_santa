@@ -1,22 +1,34 @@
 from django.shortcuts import render
 
-# Create your views here.
 
 def home(request):
+    valueRowsButtonInRow = 4
+    valueRowsButtonToggle = 4
+    no = 3
+    add = True
+    substract = False
+
+
     if request.GET and request.GET['rows']:
         no = int(request.GET['rows'])
-    else:
-        no = 3
+        valueRowsButtonInRow = no + 1
+        valueRowsButtonToggle = no - 1
+        add = True
+        substract = False
     
-    x = ''
     if request.POST and request.POST.get('minusRows'):
-        x = no - 1
+        no = int(request.GET['rows'])
+        valueRowsButtonInRow = no - 1
+        valueRowsButtonToggle = no + 1
+        add = False
+        substract = True
   
     context = {
         'title': 'Home',
         'no': no,
-        'valueRowsButton': no + 1,
-
-        'x': x
+        'valueRowsButtonInRow': valueRowsButtonInRow,
+        'valueRowsButtonToggle': valueRowsButtonToggle,
+        'add': add,
+        'subtract': substract
     }
     return render(request, 'draw/home.html', context)

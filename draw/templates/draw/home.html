@@ -4,37 +4,53 @@
         <div class="jumbotron">
             <h1 class="display-4">Wylosuj tajemniczego mikołaja!</h1>
             <p class="lead">Wpisz imiona osób, które biorą udział w losowaniu, oraz ich adresy e-mail. Każdy z uczestników otrzyma maila z imieniem wylosowanej osoby, której będzie robić prezent.</p>
-            <p>{{ x }}</p>
+
         </div>
         <form class="row g-3">
             <div class="row g-3">
             </div>
                 {% with ''|center:no as range %}
                 {% for _ in range %}
-                        <div class="col-sm-1">
-                            <label for="name1" class="col-sm-2 col-form-label">{{ forloop.counter }}.</label>
-                        </div>
-                        <div class="col-sm-3">
-                            <input type="text" class="form-control" placeholder="Name" aria-label="Name" id="name1">
-                        </div>
-                        <div class="col-sm-8">
-                            <input type="text" class="form-control" placeholder="E-mail" aria-label="E-mail" id="Email1">
-                        </div>
+                    <div class="col-sm-1">
+                        <label for="name1" class="col-sm-2 col-form-label">{{ forloop.counter }}.</label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input type="text" class="form-control" placeholder="Name" aria-label="Name" id="name1">
+                    </div>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="E-mail" aria-label="E-mail" id="Email1">
+                    </div>
                 {% endfor %}
                 {% endwith %}
+        </form >  
 
-            <div class="row g-3">
-                <form class="row g-3" action='' method='GET'></form>
-                    <button name="rows" value="{{ valueRowsButton }}" type="submit" class="btn btn-primary">+ Dodaj kolejną osobę</button>
-                </form>
-        </form >      
-                <form class="row g-2" method='POST' action=''>
-                    {% csrf_token %}
-                    <input type="hidden" id="minusRows" name="minusRows" value="1">
-                    <button name="minusRowsButton" type="submit" class="btn btn-primary">- Usuń ostatni rząd</button>
-                </form>
-                    <button type="submit" class="btn btn-warning">Losuj</button>
-            </div> 
+        <div class="row g-3">
+            <form class="row g-3" action='' method='GET'>
+                <input type="hidden" id="plusRows" name="rows"
+                {% if add %}
+                    value="{{ valueRowsButtonInRow }}"
+                {% else %}
+                    value="{{ valueRowsButtonToggle }}"
+                {% endif %}
+                >
+ 
+                <button type="submit" class="btn btn-primary">+ Dodaj kolejną osobę</button>
+            </form>
+    
+            <form class="row g-2" method='POST' 
+                {% if subtract %}
+                    action="http://localhost:8000/?rows={{ valueRowsButtonInRow }}"
+                {% else %}
+                    action="http://localhost:8000/?rows={{ valueRowsButtonToggle }}"
+                {% endif %}
+            >
+                {% csrf_token %}
+                <input type="hidden" id="minusRows" name="minusRows" value="1">
+                <button name="minusRowsButton" type="submit" class="btn btn-primary">- Usuń ostatni rząd</button>
+            </form>
+            
+                <button type="submit" class="btn btn-warning">Losuj</button>
+        </div> 
         
     </div>
 {% endblock content %}
