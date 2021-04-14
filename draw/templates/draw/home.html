@@ -5,6 +5,11 @@
             <h1 class="display-4">Wylosuj tajemniczego mikołaja!</h1>
             <p class="lead">Wpisz imiona osób, które biorą udział w losowaniu, oraz ich adresy e-mail. Każdy z uczestników otrzyma maila z imieniem wylosowanej osoby, której będzie robić prezent.</p>
         </div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
         <p>{{ x }}</p>
         <form id="namesAndEmails" class="row g-3" method="POST"> 
             {% csrf_token %}

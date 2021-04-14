@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.contrib import messages
 
 
 def home(request):
@@ -11,7 +12,7 @@ def home(request):
 
     if request.GET and request.GET['rows']:
         if int(request.GET['rows']) < 3:
-            message = 'no can do'
+            messages.warning(request, 'Liczba osób nie może być mniejsza niż 3')
             no = 3
         else:
             no = int(request.GET['rows'])
