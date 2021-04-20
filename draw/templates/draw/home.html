@@ -16,17 +16,13 @@
             <div class="row g-3">
             </div>
                 <p>{{ message }}</p>
+
                 {% with ''|center:no as range %}
                 {% for _ in range %}
                     <div class="col-sm-1">
                         <label for="name{{ forloop.counter }}" class="col-sm-2 col-form-label">{{ forloop.counter }}.</label>
                     </div>
-                    <div class="col-sm-3">
-                        <input type="text" class="form-control" placeholder="Name" aria-label="Name" id="name{{ forloop.counter }}" name="name{{ forloop.counter }}">
-                    </div>
-                    <div class="col-sm-8">
-                        <input type="text" class="form-control" placeholder="E-mail" aria-label="E-mail" name="Email{{ forloop.counter }}">
-                    </div>
+                    {{ form }}
                 {% endfor %}
                 {% endwith %}
         </form >  
