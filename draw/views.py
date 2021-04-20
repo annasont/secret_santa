@@ -8,7 +8,7 @@ def home(request):
     
     valueRowsButtonInRow = 4
     valueRowsButtonToggle = 2
-    no = 3
+    rows = 3
 
     if request.method == 'POST':
         form = ParticipantsForm(request.POST)
@@ -49,7 +49,7 @@ def home(request):
     context = {
         'title': 'Home',
         'form': form,
-        'no': no,
+        'rows': rows,
         'valueRowsButtonInRow': valueRowsButtonInRow,
         'valueRowsButtonToggle': valueRowsButtonToggle,
         # 'add': add,
