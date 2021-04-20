@@ -4,11 +4,16 @@ from .forms import ParticipantsForm
 
 
 def home(request):
-    form = ParticipantsForm(request.POST or None)
+    form = ParticipantsForm(request.POST)
     
     valueRowsButtonInRow = 4
     valueRowsButtonToggle = 2
     no = 3
+
+    if request.method == 'POST':
+        form = ParticipantsForm(request.POST)
+    else:
+        form = ParticipantsForm() 
     # add = True
     # substract = False
     # message = ''
