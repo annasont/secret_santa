@@ -10,24 +10,30 @@
                 <div class="alert alert-{{ message.tags }}">{{ message }}</div>
             {% endfor %}
         {% endif %}
-        <p>{{ x }}</p>
-  
+        <p>{{ valid }}</p>
+        
+     
         <form id="namesAndEmails" class="row g-3" method="POST"
+            
             {% if subtract %}
                 action="http://localhost:8000/?rows={{ valueRowsButtonInRow }}"
             {% else %}
                 action="http://localhost:8000/?rows={{ valueRowsButtonToggle }}"
             {% endif %}
             >
+            {{ formset.management_form }}
             {% csrf_token %}
-            <div class="row g-3">
-            </div>
-            {% for name, email in rows%}
-                <div class="col-sm-1">
-                    <label for="name{{ forloop.counter }}" class="col-sm-2 col-form-label">{{ forloop.counter }}.</label>
+            <fieldset class="form-group">
+                <div class="row g-3">
                 </div>
-                {{ form }}
-            {% endfor %}
+                
+                {% for form in formset %}
+                    <div>
+                        <label for="name{{ forloop.counter }}" class="col-sm-2 col-form-label">{{ forloop.counter }}.</label>
+                        {{ form }}
+                    </div> 
+                {% endfor %}
+            </fieldset>
             <div class="row g-3">
                 <input type="hidden" id="plusRows" name="changeNoOfRows" value="add">
                 <button type="submit" class="btn btn-primary">+ Dodaj kolejną osobę</button>

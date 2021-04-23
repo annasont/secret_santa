@@ -1,60 +1,31 @@
 from django.shortcuts import render
 from django.contrib import messages
 from .forms import ParticipantsForm
+from django.forms import formset_factory
+from django.utils.datastructures import MultiValueDictKeyError
 
 
 def home(request):
-    form = ParticipantsForm(request.POST)
-    
-    valueRowsButtonInRow = 4
-    valueRowsButtonToggle = 2
-    rows = 3
+    ParticipantsFormset = formset_factory(ParticipantsForm, extra=3)
+    formset = ParticipantsFormset()
 
+    valid = ''
     if request.method == 'POST':
-        form = ParticipantsForm(request.POST)
+        formset = ParticipantsFormset(request.POST)
+        if formset.is_valid():
+            valid = request.POST
     else:
-        form = ParticipantsForm() 
-    # add = True
-    # substract = False
-    # message = ''
-
-    # if request.GET and request.GET['rows']:
-    #     if int(request.GET['rows']) < 3:
-    #         messages.warning(request, 'Liczba osób nie może być mniejsza niż 3')
-    #         no = 3
-    #     else:
-    #         no = int(request.GET['rows'])
-    #     valueRowsButtonInRow = no + 1
-    #     valueRowsButtonToggle = no - 1
-    #     add = True
-    #     substract = False
-    
-    # if request.POST and request.POST.get('minusRows'):
-    #     if int(request.GET['rows']) < 3:
-    #         message = 'no can do'
-    #         no = 3
-    #     else:
-    #         no = int(request.GET['rows'])
-    #     valueRowsButtonInRow = no - 1
-    #     valueRowsButtonToggle = no + 1
-    #     add = False
-    #     substract = True
-
-    # #testowanie
-    # x = ''
-    # if request.POST:
-    #     x = request.POST
-    # #koniec
-  
+        formset = ParticipantsFormset() 
+ 
     context = {
         'title': 'Home',
-        'form': form,
-        'rows': rows,
-        'valueRowsButtonInRow': valueRowsButtonInRow,
-        'valueRowsButtonToggle': valueRowsButtonToggle,
-        # 'add': add,
-        # 'subtract': substract,
-        # 'message': message,
-        # 'x': x
+        'formset': formset,
+        'valid': valid
     }
     return render(request, 'draw/home.html', context)
+
+
+
+
+
+   
