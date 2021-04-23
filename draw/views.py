@@ -6,7 +6,8 @@ from django.utils.datastructures import MultiValueDictKeyError
 
 
 def home(request):
-    ParticipantsFormset = formset_factory(ParticipantsForm, extra=3)
+    noOfRows = 3
+    ParticipantsFormset = formset_factory(ParticipantsForm, extra=noOfRows)
     formset = ParticipantsFormset()
 
     valid = ''

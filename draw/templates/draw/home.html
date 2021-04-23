@@ -29,18 +29,14 @@
                 
                 {% for form in formset %}
                     <div>
-                        <label for="name{{ forloop.counter }}" class="col-sm-2 col-form-label">{{ forloop.counter }}.</label>
+                        <label class="col-sm-2 col-form-label">{{ forloop.counter }}.</label>
                         {{ form }}
                     </div> 
                 {% endfor %}
             </fieldset>
             <div class="row g-3">
-                <input type="hidden" id="plusRows" name="changeNoOfRows" value="add">
-                <button type="submit" class="btn btn-primary">+ Dodaj kolejną osobę</button>
-
-                <input type="hidden" id="minusRows" name="minusRows" value="subtract">
-                <button name="minusRowsButton" type="submit" class="btn btn-primary">– Usuń ostatni rząd</button>
-
+                <button type="submit" class="btn btn-primary" name="changeNoOfRows" value="add">+ Dodaj kolejną osobę</button>
+                <button type="submit" class="btn btn-primary" name="changeNoOfRows" value="subtract" >– Usuń ostatni rząd</button>
                 <button type="submit" class="btn btn-warning">Losuj</button>
             </div> 
         </form> 
