@@ -26,7 +26,6 @@ def home(request):
                 cp = request.POST.copy()
                 cp['form-TOTAL_FORMS'] = int(cp['form-TOTAL_FORMS']) - 1
                 formset = ParticipantsFormset(cp)
-            
 
         if formset.is_valid():
             valid = request.POST
@@ -35,15 +34,20 @@ def home(request):
         noOfRows = 3
         ParticipantsFormset = formset_factory(ParticipantsForm, extra=noOfRows)
         formset = ParticipantsFormset() 
- 
-    
+
+
+    group = {}
+    if request.method == 'POST':
+        for i in range(int(request.POST['form-TOTAL_FORMS'])):
+            group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']}
+
 
     context = {
         'title': 'Home',
         'formset': formset,
         'message': message,
         'valid': valid,
-        'x': x
+        'group': group
     }
     return render(request, 'draw/home.html', context)
 
