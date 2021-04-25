@@ -1,4 +1,5 @@
 {% extends "draw/base.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
     <div class="container pt-5">
         <div class="jumbotron">
@@ -11,7 +12,7 @@
             {% endfor %}
         {% endif %}
         <p>{{ valid }}</p>
-        
+        <p>{{ x }}</p>
      
         <form id="namesAndEmails" class="row g-3" method="POST"
             
@@ -21,7 +22,7 @@
                 action="http://localhost:8000/?rows={{ valueRowsButtonToggle }}"
             {% endif %}
             >
-            {{ formset.management_form }}
+            {{ formset.management_form|crispy }}
             {% csrf_token %}
             <fieldset class="form-group">
                 <div class="row g-3">
@@ -30,7 +31,7 @@
                 {% for form in formset %}
                     <div>
                         <label class="col-sm-2 col-form-label">{{ forloop.counter }}.</label>
-                        {{ form }}
+                        {{ form|crispy }}
                     </div> 
                 {% endfor %}
             </fieldset>
