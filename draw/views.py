@@ -3,22 +3,25 @@ from django.contrib import messages
 from .forms import ParticipantsForm
 from django.forms import formset_factory
 from django.utils.datastructures import MultiValueDictKeyError
+import random
 
 
 def home(request):
     ParticipantsFormset = formset_factory(ParticipantsForm, extra=3)
 
     message = ''
-    valid = ''
-    x = ''
+    group = {}
+    pairs = []
 
     if request.method == 'POST':
-        if request.POST['changeNoOfRows'] == 'add':
+        # Adding new row
+        if request.POST['addSubtractOrDraw'] == 'add':
             cp = request.POST.copy()
             cp['form-TOTAL_FORMS'] = int(cp['form-TOTAL_FORMS']) + 1
             formset = ParticipantsFormset(cp)
-        elif request.POST['changeNoOfRows'] == 'subtract':        
-            if int(request.POST['form-TOTAL_FORMS']) == 3:
+        # Deliting last row
+        elif request.POST['addSubtractOrDraw'] == 'subtract':        
+            if int(request.POST['form-TOTAL_FORMS']) == 3: # At least 3 rows
                 cp = request.POST.copy()
                 formset = ParticipantsFormset(cp)
                 messages.warning(request, 'Liczba osób nie może być mniejsza niż 3.')
@@ -26,28 +29,45 @@ def home(request):
                 cp = request.POST.copy()
                 cp['form-TOTAL_FORMS'] = int(cp['form-TOTAL_FORMS']) - 1
                 formset = ParticipantsFormset(cp)
+        # Drawing
+        elif request.POST['addSubtractOrDraw'] == 'draw':
+            formset = ParticipantsFormset(request.POST)
+            if formset.is_valid():
+                #creating dictionary "group" with participatns names and emails in following format:
+                #group['name']: {'email': 'email@example.com'}
+                for i in range(int(request.POST['form-TOTAL_FORMS'])):
+                    group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']}
+                #creating list with all participtants names
+                allNames = list(group.keys())
+                allNamesCopy = allNames[:]
 
-        if formset.is_valid():
-            valid = request.POST
+                def randomPair(allNames, allNamesCopy):
+                    # Finding random pair
+                    randomPersonIndex = random.randint(0, len(allNamesCopy) - 1)
+                    pair = allNamesCopy[randomPersonIndex]
+                    return pair, randomPersonIndex
+                # for every person 
+                for i in range(len(allNames)):
+                    # find pair
+                    pair, randomPersonIndex = randomPair(allNames, allNamesCopy)
+                    # you can not make a presenf for yourself. If so, draw again:
+                    while allNames[i] == pair:
+                        pair, randomPersonIndex = randomPair(allNames, allNamesCopy)
+                    pairs.append((allNames[i], pair))
+                    allNamesCopy.pop(randomPersonIndex)
 
     else:
+        #if no POST data show empty form with 3 rows
         noOfRows = 3
         ParticipantsFormset = formset_factory(ParticipantsForm, extra=noOfRows)
         formset = ParticipantsFormset() 
-
-
-    group = {}
-    if request.method == 'POST':
-        for i in range(int(request.POST['form-TOTAL_FORMS'])):
-            group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']}
 
 
     context = {
         'title': 'Home',
         'formset': formset,
         'message': message,
-        'valid': valid,
-        'group': group
+        'pairs': pairs
     }
     return render(request, 'draw/home.html', context)
 
