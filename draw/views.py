@@ -12,6 +12,7 @@ def home(request):
     message = ''
     group = {}
     pairs = []
+    x = ''
 
     if request.method == 'POST':
         # Adding new row
@@ -55,6 +56,8 @@ def home(request):
                         pair, randomPersonIndex = randomPair(allNames, allNamesCopy)
                     pairs.append((allNames[i], pair))
                     allNamesCopy.pop(randomPersonIndex)
+            else:
+                messages.warning(request, 'Uzupełnij brakujące pola.')
 
     else:
         #if no POST data show empty form with 3 rows
@@ -67,7 +70,8 @@ def home(request):
         'title': 'Home',
         'formset': formset,
         'message': message,
-        'pairs': pairs
+        'pairs': pairs,
+        'x': x
     }
     return render(request, 'draw/home.html', context)
 
