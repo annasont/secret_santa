@@ -45,8 +45,8 @@ def home(request):
                 #creating list with all participtants names
                 allNames = list(group.keys())
                 #at least 3 participants:
-                if len(allNames) < 3:
-                    messages.warning(request, 'Liczba osób nie może być mniejsza niż 3.')
+                if len(allNames) != int(request.POST['form-TOTAL_FORMS']):
+                    messages.error(request, 'Uzupełnij brakujące pola w formularzu.')
                 else:
                     allNamesCopy = allNames[:]
                     def randomPair(allNames, allNamesCopy):
@@ -64,7 +64,10 @@ def home(request):
                         pairs.append((allNames[i], pair))
                         allNamesCopy.pop(randomPersonIndex)
             else:
-                messages.warning(request, 'Uzupełnij brakujące pola.')
+                if formset.errors[2]['name']:
+                    messages.error(request, 'Uzupełnij brakujące pola.')
+                elif formset.errors[2]['email']:
+                    messages.error(request, 'Niepoprawny email.')
 
     else:
         #if no POST data show empty form with 3 rows
