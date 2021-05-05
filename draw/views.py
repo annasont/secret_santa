@@ -12,7 +12,7 @@ def home(request):
     message = ''
     group = {}
     pairs = []
-    x = ''
+    x = []
 
     if request.method == 'POST':
         # Adding new row
@@ -37,28 +37,32 @@ def home(request):
                 #creating dictionary "group" wi th participatns names and emails in following format:
                 #group['name']: {'email': 'email@example.com'}
                 for i in range(int(request.POST['form-TOTAL_FORMS'])):
+                    #excluding empty rows:
                     if request.POST[f'form-{i}-name'] == '':
                         continue
                     else:
                         group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']}
                 #creating list with all participtants names
                 allNames = list(group.keys())
-                allNamesCopy = allNames[:]
-
-                def randomPair(allNames, allNamesCopy):
-                    # Finding random pair
-                    randomPersonIndex = random.randint(0, len(allNamesCopy) - 1)
-                    pair = allNamesCopy[randomPersonIndex]
-                    return pair, randomPersonIndex
-                # for every person 
-                for i in range(len(allNames)):
-                    # find pair
-                    pair, randomPersonIndex = randomPair(allNames, allNamesCopy)
-                    # you can not make a presenf for yourself. If so, draw again:
-                    while allNames[i] == pair:
+                #at least 3 participants:
+                if len(allNames) < 3:
+                    messages.warning(request, 'Liczba osób nie może być mniejsza niż 3.')
+                else:
+                    allNamesCopy = allNames[:]
+                    def randomPair(allNames, allNamesCopy):
+                        # Finding random pair
+                        randomPersonIndex = random.randint(0, len(allNamesCopy) - 1)
+                        pair = allNamesCopy[randomPersonIndex]
+                        return pair, randomPersonIndex
+                    # for every person 
+                    for i in range(len(allNames)):
+                        # find pair
                         pair, randomPersonIndex = randomPair(allNames, allNamesCopy)
-                    pairs.append((allNames[i], pair))
-                    allNamesCopy.pop(randomPersonIndex)
+                        # you can not make a presenf for yourself. If so, draw again:
+                        while allNames[i] == pair:
+                            pair, randomPersonIndex = randomPair(allNames, allNamesCopy)
+                        pairs.append((allNames[i], pair))
+                        allNamesCopy.pop(randomPersonIndex)
             else:
                 messages.warning(request, 'Uzupełnij brakujące pola.')
 
@@ -74,7 +78,6 @@ def home(request):
         'formset': formset,
         'message': message,
         'pairs': pairs,
-        'x': x
     }
     return render(request, 'draw/home.html', context)
 
