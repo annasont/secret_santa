@@ -34,10 +34,13 @@ def home(request):
         elif request.POST['addSubtractOrDraw'] == 'draw':
             formset = ParticipantsFormset(request.POST)
             if formset.is_valid():
-                #creating dictionary "group" with participatns names and emails in following format:
+                #creating dictionary "group" wi th participatns names and emails in following format:
                 #group['name']: {'email': 'email@example.com'}
                 for i in range(int(request.POST['form-TOTAL_FORMS'])):
-                    group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']}
+                    if request.POST[f'form-{i}-name'] == '':
+                        continue
+                    else:
+                        group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']}
                 #creating list with all participtants names
                 allNames = list(group.keys())
                 allNamesCopy = allNames[:]
