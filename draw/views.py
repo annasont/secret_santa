@@ -64,10 +64,18 @@ def home(request):
                         pairs.append((allNames[i], pair))
                         allNamesCopy.pop(randomPersonIndex)
             else:
-                if formset.errors[2]['name']:
-                    messages.error(request, 'Uzupełnij brakujące pola.')
-                elif formset.errors[2]['email']:
-                    messages.error(request, 'Niepoprawny email.')
+                if formset.errors:
+                    for i in range(len(formset.errors)):
+                        for key in formset.errors[i]:
+                            if formset.errors[i][key]:
+                                errorMessage = formset.errors[i][key]
+
+                    if errorMessage == ['This field is required.']:
+                        errorMessage = 'Uzupełnij wszystkie pola z imionami.'
+                    elif errorMessage == ['Enter a valid email address.']:
+                        errorMessage = 'Wprowadź poprawne adresy email.'
+
+                    messages.error(request, errorMessage)
 
     else:
         #if no POST data show empty form with 3 rows
