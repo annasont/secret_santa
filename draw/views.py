@@ -13,6 +13,7 @@ def home(request):
     group = {}
     pairs = []
     x = []
+    errorMessage = ''
 
     if request.method == 'POST':
         # Adding new row
@@ -34,19 +35,19 @@ def home(request):
         elif request.POST['addSubtractOrDraw'] == 'draw':
             formset = ParticipantsFormset(request.POST)
             if formset.is_valid():
-                #creating dictionary "group" wi th participatns names and emails in following format:
+                x = formset.cleaned_data
+                #creating dictionary "group" with participatns names and emails in following format:
                 #group['name']: {'email': 'email@example.com'}
                 for i in range(int(request.POST['form-TOTAL_FORMS'])):
-                    #excluding empty rows:
                     if request.POST[f'form-{i}-name'] == '':
                         continue
                     else:
                         group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']}
                 #creating list with all participtants names
                 allNames = list(group.keys())
-                #at least 3 participants:
+                #no empty rows:
                 if len(allNames) != int(request.POST['form-TOTAL_FORMS']):
-                    messages.error(request, 'Uzupełnij brakujące pola w formularzu.')
+                    errorMessage = 'Uzupełnij brakujące rzędy w formularzu.'
                 else:
                     allNamesCopy = allNames[:]
                     def randomPair(allNames, allNamesCopy):
@@ -71,11 +72,11 @@ def home(request):
                                 errorMessage = formset.errors[i][key]
 
                     if errorMessage == ['This field is required.']:
-                        errorMessage = 'Uzupełnij wszystkie pola z imionami.'
+                        errorMessage = 'Uzupełnij brakujące pola.'
                     elif errorMessage == ['Enter a valid email address.']:
                         errorMessage = 'Wprowadź poprawne adresy email.'
 
-                    messages.error(request, errorMessage)
+            messages.error(request, errorMessage)
 
     else:
         #if no POST data show empty form with 3 rows
@@ -89,6 +90,7 @@ def home(request):
         'formset': formset,
         'message': message,
         'pairs': pairs,
+        'x': x
     }
     return render(request, 'draw/home.html', context)
 
