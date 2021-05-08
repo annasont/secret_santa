@@ -59,17 +59,23 @@ def home(request):
             for i in range(int(request.POST['form-TOTAL_FORMS'])):
                 # Can not accept empty rows:
                 if request.POST[f'form-{i}-name'] == '' and request.POST[f'form-{i}-email'] == '':
-                    errorMessages.append('Uzupełnij brakujące rzędy.')
+                    text = 'Uzupełnij brakujące rzędy.'
+                    if text not in errorMessages:
+                        errorMessages.append(text)
                 
                 # Can not accept same names:
                 if request.POST[f'form-{i}-name'] in names:
-                    errorMessages.append('Imiona nie mogą się powtarzać (jeżeli w losowaniu biorą udział osoby o tych samych imionach, wpisz ksywy / nazwiska / coś co pozwoli zidentyfikować właściwą osobę)')
+                    text = 'Imiona nie mogą się powtarzać (jeżeli w losowaniu biorą udział osoby o tych samych imionach, wpisz ksywy / nazwiska / coś co pozwoli zidentyfikować właściwą osobę).'
+                    if text not in errorMessages:
+                        errorMessages.append(text)
                 else:
                     names.append(request.POST[f'form-{i}-name'])
 
                 # Can not accept same email addresses:
                 if request.POST[f'form-{i}-email'] in emails:
-                    errorMessages.append('Adresy email nie mogą się powtarzać')   
+                    text = 'Adresy email nie mogą się powtarzać.'
+                    if text not in errorMessages:
+                        errorMessages.append(text)   
                 else:
                     emails.append(request.POST[f'form-{i}-email'])
 
