@@ -77,8 +77,6 @@ def home(request):
                     emails.append(request.POST[f'form-{i}-email'])
 
             # Displaying all errors
-           
-    
             for message in errorMessages:
                 messages.error(request, message)
 
