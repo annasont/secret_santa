@@ -1,3 +1,4 @@
+from django.contrib.messages.api import error
 from django.shortcuts import render
 from django.contrib import messages
 from .forms import ParticipantsForm
@@ -12,8 +13,10 @@ def home(request):
     message = ''
     group = {}
     pairs = []
+    errorMessages = []
+    allEmails = []
     x = []
-    errorMessage = ''
+    y = []
 
     if request.method == 'POST':
         # Adding new row
@@ -35,20 +38,25 @@ def home(request):
         elif request.POST['addSubtractOrDraw'] == 'draw':
             formset = ParticipantsFormset(request.POST)
             if formset.is_valid():
-                x = formset.cleaned_data
-                #creating dictionary "group" with participatns names and emails in following format:
-                #group['name']: {'email': 'email@example.com'}
+                # creating dictionary "group" with participatns names and emails in following format:
+                # group['name']: {'email': 'email@example.com'}
                 for i in range(int(request.POST['form-TOTAL_FORMS'])):
                     if request.POST[f'form-{i}-name'] == '':
                         continue
+                    elif request.POST[f'form-{i}-email'] in allEmails:
+                        errorMessages.append('Adresy email nie mogą się powtarzać')
+                        group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']} 
                     else:
-                        group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']}
-                #creating list with all participtants names
+                        allEmails.append(request.POST[f'form-{i}-email'])
+                        group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']} 
+                        
+                # creating list with all participtants names
                 allNames = list(group.keys())
-                #no empty rows:
+                # no empty rows:
                 if len(allNames) != int(request.POST['form-TOTAL_FORMS']):
-                    errorMessage = 'Uzupełnij brakujące rzędy w formularzu.'
-                else:
+                    errorMessages.append('Uzupełnij brakujące rzędy.')
+                
+                if errorMessages == []:
                     allNamesCopy = allNames[:]
                     def randomPair(allNames, allNamesCopy):
                         # Finding random pair
@@ -72,11 +80,14 @@ def home(request):
                                 errorMessage = formset.errors[i][key]
 
                     if errorMessage == ['This field is required.']:
-                        errorMessage = 'Uzupełnij brakujące pola.'
+                        errorMessages.append('Uzupełnij brakujące pola.')
                     elif errorMessage == ['Enter a valid email address.']:
-                        errorMessage = 'Wprowadź poprawne adresy email.'
+                        errorMessages.append('Niepoprawny adres email.')
 
-            messages.error(request, errorMessage)
+            for message in errorMessages:
+                messages.error(request, message)
+           
+
 
     else:
         #if no POST data show empty form with 3 rows
@@ -90,7 +101,8 @@ def home(request):
         'formset': formset,
         'message': message,
         'pairs': pairs,
-        'x': x
+        'x': x,
+        'y': y
     }
     return render(request, 'draw/home.html', context)
 
@@ -98,4 +110,4 @@ def home(request):
 
 
 
-   
+   #cleaned data
