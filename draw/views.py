@@ -84,7 +84,7 @@ def home(request):
             group = {}       
             if formset.is_valid() and errorMessages == []:
                 # And creating dictionary "group" with participatns names and emails in following format:
-                # group['name']: {'email': 'email@example.com'}
+                # group['name'] = {'email': 'email@example.com'}
                 for i in range(int(request.POST['form-TOTAL_FORMS'])):
                     group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']}
                 
@@ -102,11 +102,17 @@ def home(request):
                 for i in range(len(allNames)):
                     # find pair
                     pair, randomPersonIndex = randomPair(allNames, allNamesCopy)
-                    # you can not make a presenf for yourself. If so, draw again:
+                    # you can not make a gift for yourself. If so, draw again:
                     while allNames[i] == pair:
                         pair, randomPersonIndex = randomPair(allNames, allNamesCopy)
                     pairs.append((allNames[i], pair))
                     allNamesCopy.pop(randomPersonIndex)
+                
+                """send emails"""
+                # Log to email account
+                # Send emails
+                # Redirect to page with success message
+                
 
     else:
         #if no POST data show empty form with 3 rows
