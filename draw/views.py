@@ -8,12 +8,9 @@ import random
 
 def home(request):
     ParticipantsFormset = formset_factory(ParticipantsForm, extra=3)
-
-    message = ''
-    group = {}
-    pairs = []
+    
     errorMessages = []
-
+    pairs = []
 
     if request.method == 'POST':
         # Adding new row (button "+ Dodaj kolejną osobę" pressed)
@@ -80,10 +77,13 @@ def home(request):
                     emails.append(request.POST[f'form-{i}-email'])
 
             # Displaying all errors
+           
+    
             for message in errorMessages:
                 messages.error(request, message)
 
-            # If formset is valid        
+            # If formset is valid
+            group = {}       
             if formset.is_valid() and errorMessages == []:
                 # And creating dictionary "group" with participatns names and emails in following format:
                 # group['name']: {'email': 'email@example.com'}
@@ -120,13 +120,6 @@ def home(request):
     context = {
         'title': 'Home',
         'formset': formset,
-        'message': message,
         'pairs': pairs,
     }
     return render(request, 'draw/home.html', context)
-
-
-
-
-
-   #cleaned data
