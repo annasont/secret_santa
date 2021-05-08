@@ -3,7 +3,6 @@ from django.shortcuts import render
 from django.contrib import messages
 from .forms import ParticipantsForm
 from django.forms import formset_factory
-from django.utils.datastructures import MultiValueDictKeyError
 import random
 
 
@@ -14,8 +13,6 @@ def home(request):
     group = {}
     pairs = []
     errorMessages = []
-    allNames = []
-    allEmails = []
 
 
     if request.method == 'POST':
@@ -36,7 +33,7 @@ def home(request):
                 cp['form-TOTAL_FORMS'] = int(cp['form-TOTAL_FORMS']) - 1
                 formset = ParticipantsFormset(cp)
 
-        # Drawing (button "Losuj pressed")
+        # Drawing (button "Losuj" pressed)
         elif request.POST['addSubtractOrDraw'] == 'draw':
             formset = ParticipantsFormset(request.POST)
             
@@ -57,24 +54,24 @@ def home(request):
                         errorMessages.append('Niepoprawny adres email.')
 
             # Additional validation.
-            # And creating dictionary "group" with participatns names and emails in following format:
-            # group['name']: {'email': 'email@example.com'}
+            names = []
+            emails = []
             for i in range(int(request.POST['form-TOTAL_FORMS'])):
-                if request.POST[f'form-{i}-name'] == '':
-                    continue
-                # Can not accept equal email addresses:
-                elif request.POST[f'form-{i}-email'] in allEmails:
-                    errorMessages.append('Adresy email nie mogą się powtarzać')
-                    group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']} 
+                # Can not accept empty rows:
+                if request.POST[f'form-{i}-name'] == '' and request.POST[f'form-{i}-email'] == '':
+                    errorMessages.append('Uzupełnij brakujące rzędy.')
+                
+                # Can not accept same names:
+                if request.POST[f'form-{i}-name'] in names:
+                    errorMessages.append('Imiona nie mogą się powtarzać (jeżeli w losowaniu biorą udział osoby o tych samych imionach, wpisz ksywy / nazwiska / coś co pozwoli zidentyfikować właściwą osobę)')
                 else:
-                    allEmails.append(request.POST[f'form-{i}-email'])
-                    group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']} 
+                    names.append(request.POST[f'form-{i}-name'])
 
-            # creating list with all participtants names
-            allNames = list(group.keys())
-            # Can not accept empty rows:
-            if len(allNames) != int(request.POST['form-TOTAL_FORMS']):
-                errorMessages.append('Uzupełnij brakujące rzędy.') 
+                # Can not accept same email addresses:
+                if request.POST[f'form-{i}-email'] in emails:
+                    errorMessages.append('Adresy email nie mogą się powtarzać')   
+                else:
+                    emails.append(request.POST[f'form-{i}-email'])
 
             # Displaying all errors
             for message in errorMessages:
@@ -82,13 +79,21 @@ def home(request):
 
             # If formset is valid        
             if formset.is_valid() and errorMessages == []:
+                # And creating dictionary "group" with participatns names and emails in following format:
+                # group['name']: {'email': 'email@example.com'}
+                for i in range(int(request.POST['form-TOTAL_FORMS'])):
+                    group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']}
+                
+                # creating list with all participtants names
+                allNames = list(group.keys())
                 allNamesCopy = allNames[:]
+                
                 def randomPair(allNames, allNamesCopy):
                     '''Finding random pair'''
                     randomPersonIndex = random.randint(0, len(allNamesCopy) - 1)
                     pair = allNamesCopy[randomPersonIndex]
                     return pair, randomPersonIndex
-                    
+
                 # for every person 
                 for i in range(len(allNames)):
                     # find pair
