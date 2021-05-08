@@ -14,17 +14,18 @@ def home(request):
     group = {}
     pairs = []
     errorMessages = []
+    allNames = []
     allEmails = []
-    x = []
-    y = []
+
 
     if request.method == 'POST':
-        # Adding new row
+        # Adding new row (button "+ Dodaj kolejną osobę" pressed)
         if request.POST['addSubtractOrDraw'] == 'add':
             cp = request.POST.copy()
             cp['form-TOTAL_FORMS'] = int(cp['form-TOTAL_FORMS']) + 1
             formset = ParticipantsFormset(cp)
-        # Deliting last row
+
+        # Deliting last row (button "- Usuń ostatni rząd pressed")
         elif request.POST['addSubtractOrDraw'] == 'subtract':        
             if int(request.POST['form-TOTAL_FORMS']) == 3: # At least 3 rows
                 cp = request.POST.copy()
@@ -34,60 +35,69 @@ def home(request):
                 cp = request.POST.copy()
                 cp['form-TOTAL_FORMS'] = int(cp['form-TOTAL_FORMS']) - 1
                 formset = ParticipantsFormset(cp)
-        # Drawing
+
+        # Drawing (button "Losuj pressed")
         elif request.POST['addSubtractOrDraw'] == 'draw':
             formset = ParticipantsFormset(request.POST)
+            
+            # Standard validation
             if formset.is_valid():
-                # creating dictionary "group" with participatns names and emails in following format:
-                # group['name']: {'email': 'email@example.com'}
-                for i in range(int(request.POST['form-TOTAL_FORMS'])):
-                    if request.POST[f'form-{i}-name'] == '':
-                        continue
-                    elif request.POST[f'form-{i}-email'] in allEmails:
-                        errorMessages.append('Adresy email nie mogą się powtarzać')
-                        group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']} 
-                    else:
-                        allEmails.append(request.POST[f'form-{i}-email'])
-                        group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']} 
-                        
-                # creating list with all participtants names
-                allNames = list(group.keys())
-                # no empty rows:
-                if len(allNames) != int(request.POST['form-TOTAL_FORMS']):
-                    errorMessages.append('Uzupełnij brakujące rzędy.')
-                
-                if errorMessages == []:
-                    allNamesCopy = allNames[:]
-                    def randomPair(allNames, allNamesCopy):
-                        # Finding random pair
-                        randomPersonIndex = random.randint(0, len(allNamesCopy) - 1)
-                        pair = allNamesCopy[randomPersonIndex]
-                        return pair, randomPersonIndex
-                    # for every person 
-                    for i in range(len(allNames)):
-                        # find pair
-                        pair, randomPersonIndex = randomPair(allNames, allNamesCopy)
-                        # you can not make a presenf for yourself. If so, draw again:
-                        while allNames[i] == pair:
-                            pair, randomPersonIndex = randomPair(allNames, allNamesCopy)
-                        pairs.append((allNames[i], pair))
-                        allNamesCopy.pop(randomPersonIndex)
+                pass
             else:
+                errorMsg = []
                 if formset.errors:
                     for i in range(len(formset.errors)):
                         for key in formset.errors[i]:
                             if formset.errors[i][key]:
-                                errorMessage = formset.errors[i][key]
+                                errorMsg.append(formset.errors[i][key])
 
-                    if errorMessage == ['This field is required.']:
+                    if ['This field is required.'] in errorMsg:
                         errorMessages.append('Uzupełnij brakujące pola.')
-                    elif errorMessage == ['Enter a valid email address.']:
+                    if ['Enter a valid email address.'] in errorMsg:
                         errorMessages.append('Niepoprawny adres email.')
 
+            # Additional validation.
+            # And creating dictionary "group" with participatns names and emails in following format:
+            # group['name']: {'email': 'email@example.com'}
+            for i in range(int(request.POST['form-TOTAL_FORMS'])):
+                if request.POST[f'form-{i}-name'] == '':
+                    continue
+                # Can not accept equal email addresses:
+                elif request.POST[f'form-{i}-email'] in allEmails:
+                    errorMessages.append('Adresy email nie mogą się powtarzać')
+                    group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']} 
+                else:
+                    allEmails.append(request.POST[f'form-{i}-email'])
+                    group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']} 
+
+            # creating list with all participtants names
+            allNames = list(group.keys())
+            # Can not accept empty rows:
+            if len(allNames) != int(request.POST['form-TOTAL_FORMS']):
+                errorMessages.append('Uzupełnij brakujące rzędy.') 
+
+            # Displaying all errors
             for message in errorMessages:
                 messages.error(request, message)
-           
 
+            # If formset is valid        
+            if formset.is_valid() and errorMessages == []:
+                allNamesCopy = allNames[:]
+                def randomPair(allNames, allNamesCopy):
+                    '''Finding random pair'''
+                    randomPersonIndex = random.randint(0, len(allNamesCopy) - 1)
+                    pair = allNamesCopy[randomPersonIndex]
+                    return pair, randomPersonIndex
+                    
+                # for every person 
+                for i in range(len(allNames)):
+                    # find pair
+                    pair, randomPersonIndex = randomPair(allNames, allNamesCopy)
+                    # you can not make a presenf for yourself. If so, draw again:
+                    while allNames[i] == pair:
+                        pair, randomPersonIndex = randomPair(allNames, allNamesCopy)
+                    pairs.append((allNames[i], pair))
+                    allNamesCopy.pop(randomPersonIndex)
 
     else:
         #if no POST data show empty form with 3 rows
@@ -101,8 +111,6 @@ def home(request):
         'formset': formset,
         'message': message,
         'pairs': pairs,
-        'x': x,
-        'y': y
     }
     return render(request, 'draw/home.html', context)
 
