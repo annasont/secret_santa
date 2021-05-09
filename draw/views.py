@@ -113,7 +113,6 @@ def home(request):
                 # Send emails
                 # Redirect to page with success message
                 
-
     else:
         #if no POST data show empty form with 3 rows
         noOfRows = 3
@@ -127,3 +126,11 @@ def home(request):
         'pairs': pairs,
     }
     return render(request, 'draw/home.html', context)
+
+def drawingResult(request):
+    x = 'test'
+    context = {
+        'x': x
+    }
+
+    return render(request, 'draw/drawing-result.html', context)
