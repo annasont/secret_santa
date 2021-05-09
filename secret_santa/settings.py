@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 from django.contrib.messages import constants as messages
+import os
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -128,3 +129,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 CRISPY_TEMPLAE_PACK = 'bootstrap5'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('SECRETSANTA_USER')
+EMAIL_HOST_PASWORD = os.environ.get('SECRETSANTA_PASS')

@@ -3,7 +3,8 @@ from django.shortcuts import render
 from django.contrib import messages
 from .forms import ParticipantsForm
 from django.forms import formset_factory
-import random
+from django.core.mail import send_mail
+import random, smtplib, os
 
 
 def home(request):
@@ -110,6 +111,9 @@ def home(request):
                 
                 """send emails"""
                 # Log to email account
+                send_mail('Test', 'Tresc wiadomosci', 'secretsanta.losowanie@gmail.com', ['aniasontowska@gmail.com'])
+
+
                 # Send emails
                 # Redirect to page with success message
                 
