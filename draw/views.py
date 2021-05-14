@@ -110,11 +110,15 @@ def home(request):
                     allNamesCopy.pop(randomPersonIndex)
                 
                 """send emails"""
-                # Log to email account
-                send_mail('Test', 'Tresc wiadomosci', 'secretsanta.losowanie@gmail.com', ['aniasontowska@gmail.com'])
+                for i in range(len(pairs)):
+                    personWho = pairs[i][0]
+                    personWhom = pairs[i][1]
+                    sendTo = group[personWho]['email']
+                    title = 'Losowanie secret santa'
+                    mailMessage = f'Cześć {personWho}\nBierzesz udział w losownaniu secret santa.\nOsoba, której robisz prezent to: {personWhom}.\nPozdrawiam,\nSecret santa'
+                    send_mail(title, mailMessage, 'secretsanta.losowanie@gmail.com', [sendTo])
 
-
-                # Send emails
+                # error if fails
                 # Redirect to page with success message
                 
     else:
@@ -127,7 +131,7 @@ def home(request):
     context = {
         'title': 'Home',
         'formset': formset,
-        'pairs': pairs,
+        'pairs': pairs
     }
     return render(request, 'draw/home.html', context)
 
