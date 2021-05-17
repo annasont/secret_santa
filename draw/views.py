@@ -1,5 +1,5 @@
 from django.contrib.messages.api import error
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import ParticipantsForm
 from django.forms import formset_factory
@@ -110,16 +110,23 @@ def home(request):
                     allNamesCopy.pop(randomPersonIndex)
                 
                 """send emails"""
+                message = False
                 for i in range(len(pairs)):
                     personWho = pairs[i][0]
                     personWhom = pairs[i][1]
                     sendTo = group[personWho]['email']
                     title = 'Losowanie secret santa'
                     mailMessage = f'Cześć {personWho}\nBierzesz udział w losownaniu secret santa.\nOsoba, której robisz prezent to: {personWhom}.\nPozdrawiam,\nSecret santa'
-                    send_mail(title, mailMessage, 'secretsanta.losowanie@gmail.com', [sendTo])
-
-                # error if fails
-                # Redirect to page with success message
+                    try:
+                        send_mail(title, mailMessage, 'secretsanta.losowanie@gmail.com', [sendTo])
+                    except:
+                        message = True
+                    
+                if message == True:
+                    messages.error(request, 'Wystąpił problem z wysłaniem maili. Spróbuj ponownie później.')
+                if message == False:
+                    return redirect('draw-drawing-result')
+                
                 
     else:
         #if no POST data show empty form with 3 rows
@@ -134,6 +141,7 @@ def home(request):
         'pairs': pairs
     }
     return render(request, 'draw/home.html', context)
+
 
 def drawingResult(request):
     x = 'test'
