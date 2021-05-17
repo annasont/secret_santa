@@ -3,7 +3,10 @@
     <div class="container pt-5">
         <div class="alert alert-success">
             <p>Losowanie zakończone! Sprawdź pocztę aby dowiedzieć się komu robisz prezent :).</p> 
-            <p>Lista osób, które wzięły udział w losowaniu:</p>
+            <p> Lista osób, które wzięły udział w losowaniu:
+            {% for name in request.session.participants %}
+                <p>{{ name }}</p>
+            {% endfor %}
         </div>
     </div>
 {% endblock content %}

@@ -9,6 +9,12 @@ import random, smtplib, os
 
 def home(request):
     ParticipantsFormset = formset_factory(ParticipantsForm, extra=3)
+
+    def participants(group):
+        participants = []
+        for person in group:
+            participants.append(f"{person} ({group[person]['email']})")
+        return participants
     
     errorMessages = []
     pairs = []
@@ -117,16 +123,17 @@ def home(request):
                     sendTo = group[personWho]['email']
                     title = 'Losowanie secret santa'
                     mailMessage = f'Cześć {personWho}\nBierzesz udział w losownaniu secret santa.\nOsoba, której robisz prezent to: {personWhom}.\nPozdrawiam,\nSecret santa'
-                    try:
-                        send_mail(title, mailMessage, 'secretsanta.losowanie@gmail.com', [sendTo])
-                    except:
-                        message = True
+                    # try:
+                    #     send_mail(title, mailMessage, 'secretsanta.losowanie@gmail.com', [sendTo])
+                    # except:
+                    #     message = True
                     
                 if message == True:
                     messages.error(request, 'Wystąpił problem z wysłaniem maili. Spróbuj ponownie później.')
                 if message == False:
-                    return redirect('draw-drawing-result')
-                
+                    allParticipants = participants(group)
+                    request.session['participants'] = allParticipants
+                    return redirect('draw-drawing-result')             
                 
     else:
         #if no POST data show empty form with 3 rows
@@ -138,15 +145,10 @@ def home(request):
     context = {
         'title': 'Home',
         'formset': formset,
-        'pairs': pairs
+        'pairs': pairs,
     }
     return render(request, 'draw/home.html', context)
 
 
 def drawingResult(request):
-    x = 'test'
-    context = {
-        'x': x
-    }
-
-    return render(request, 'draw/drawing-result.html', context)
+    return render(request, 'draw/drawing-result.html')
