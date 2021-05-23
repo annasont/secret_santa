@@ -33,10 +33,47 @@
                 {% endfor %}
             </fieldset>
             <div class="row mt-3">
-                <button type="submit" class="btn btn-primary mb-3" name="addSubtractOrDraw" value="add">+ Dodaj kolejną osobę</button>
-                <button type="submit" class="btn btn-primary mb-3" name="addSubtractOrDraw" value="subtract" >– Usuń ostatni rząd</button>
+                <button type="submit" class="btn btn-primary mb-3 rememberScrollPos" name="addSubtractOrDraw" value="add">+ Dodaj kolejną osobę</button>
+                <button type="submit" class="btn btn-primary mb-3 rememberScrollPos" name="addSubtractOrDraw" value="subtract" >– Usuń ostatni rząd</button>
                 <button type="submit" class="btn btn-warning" name="addSubtractOrDraw" value="draw">Losuj</button>
             </div> 
         </form> 
     </div>
+
+    <script type="text/javascript">
+        (function($){
+            /**
+            * Store scroll position for and set it after reload
+            *
+            * @return {boolean} [loacalStorage is available]
+            */
+            $.fn.scrollPosReaload = function(){
+                if (localStorage) {
+                    var posReader = localStorage["posStorage"];
+                    if (posReader) {
+                        $(window).scrollTop(posReader);
+                        localStorage.removeItem("posStorage");
+                    }
+                    $(this).click(function(e) {
+                        localStorage["posStorage"] = $(window).scrollTop();
+                    });
+
+                    return true;
+                }
+
+                return false;
+            }
+        
+/* ================================================== */
+
+        $(document).ready(function() {
+            // Feel free to set it for any element who trigger the reload
+            $('.rememberScrollPos').scrollPosReaload();
+        });
+    
+    }(jQuery)); 
+
+
+    </script>
+
 {% endblock content %}
