@@ -9,12 +9,6 @@ import random, smtplib, os
 
 def home(request):
     ParticipantsFormset = formset_factory(ParticipantsForm, extra=3)
-
-    def participants(group):
-        participants = []
-        for person in group:
-            participants.append(f"{person} ({group[person]['email']})")
-        return participants
     
     errorMessages = []
     pairs = []
@@ -22,21 +16,12 @@ def home(request):
     if request.method == 'POST':
         # Adding new row (button "+ Dodaj kolejną osobę" pressed)
         if request.POST['addSubtractOrDraw'] == 'add':
-            cp = request.POST.copy()
-            cp['form-TOTAL_FORMS'] = int(cp['form-TOTAL_FORMS']) + 1
-            formset = ParticipantsFormset(cp)
+            formset = addRow(request, ParticipantsFormset)
 
         # Deliting last row (button "- Usuń ostatni rząd pressed")
-        elif request.POST['addSubtractOrDraw'] == 'subtract':        
-            if int(request.POST['form-TOTAL_FORMS']) == 3: # At least 3 rows
-                cp = request.POST.copy()
-                formset = ParticipantsFormset(cp)
-                messages.warning(request, 'Liczba osób nie może być mniejsza niż 3.')
-            else:
-                cp = request.POST.copy()
-                cp['form-TOTAL_FORMS'] = int(cp['form-TOTAL_FORMS']) - 1
-                formset = ParticipantsFormset(cp)
-
+        elif request.POST['addSubtractOrDraw'] == 'subtract':
+            formset, error = subtractRow(request, ParticipantsFormset)
+            
         # Drawing (button "Losuj" pressed)
         elif request.POST['addSubtractOrDraw'] == 'draw':
             formset = ParticipantsFormset(request.POST)
@@ -99,11 +84,6 @@ def home(request):
                 allNames = list(group.keys())
                 allNamesCopy = allNames[:]
                 
-                def randomPair(allNames, allNamesCopy):
-                    '''Finding random pair'''
-                    randomPersonIndex = random.randint(0, len(allNamesCopy) - 1)
-                    pair = allNamesCopy[randomPersonIndex]
-                    return pair, randomPersonIndex
 
                 # for every person 
                 for i in range(len(allNames)):
@@ -131,15 +111,13 @@ def home(request):
                 if message == True:
                     messages.error(request, 'Wystąpił problem z wysłaniem maili. Spróbuj ponownie później.')
                 if message == False:
-                    allParticipants = participants(group)
+                    allParticipants = createDictWithAllParticipatsNamesAndEmails(group)
                     request.session['participants'] = allParticipants
                     return redirect('draw-drawing-result')             
                 
     else:
-        #if no POST data show empty form with 3 rows
-        noOfRows = 3
-        ParticipantsFormset = formset_factory(ParticipantsForm, extra=noOfRows)
-        formset = ParticipantsFormset() 
+        #if no POST data - show empty form with 3 rows
+        formset = generateEmptyForm(ParticipantsFormset)
 
 
     context = {
@@ -148,6 +126,51 @@ def home(request):
         'pairs': pairs,
     }
     return render(request, 'draw/home.html', context)
+
+
+def createDictWithAllParticipatsNamesAndEmails(group):
+    participants = []
+    for person in group:
+        participants.append(f"{person} ({group[person]['email']})")
+    return participants
+
+def generateEmptyForm(ParticipantsFormset):
+    noOfRows = 3
+    ParticipantsFormset = formset_factory(ParticipantsForm, extra=noOfRows)
+    formset = ParticipantsFormset()
+    return formset
+
+def addRow(request, ParticipantsFormset):
+    requestPostData = request.POST.copy()
+    requestPostData['form-TOTAL_FORMS'] = int(requestPostData['form-TOTAL_FORMS']) + 1
+    formset = ParticipantsFormset(requestPostData)
+    return formset
+
+def subtractRowSuccess(request, ParticipantsFormset):
+    requestPostData = request.POST.copy()
+    requestPostData['form-TOTAL_FORMS'] = int(requestPostData['form-TOTAL_FORMS']) - 1
+    formset = ParticipantsFormset(requestPostData)
+    error = ''
+    return formset, error
+
+def warningAtLeast3Participants(request, ParticipantsFormset):
+    requestPostData = request.POST.copy()
+    formset = ParticipantsFormset(requestPostData)
+    error = messages.warning(request, 'Liczba osób nie może być mniejsza niż 3.')
+    return formset, error
+
+def subtractRow(request, ParticipantsFormset):
+    if int(request.POST['form-TOTAL_FORMS']) == 3: # At least 3 rows
+        formset, error = warningAtLeast3Participants(request, ParticipantsFormset)
+    else:
+        formset, error = subtractRowSuccess(request, ParticipantsFormset)
+    return formset, error
+
+def randomPair(allNames, allNamesCopy):
+    '''Finding random pair'''
+    randomPersonIndex = random.randint(0, len(allNamesCopy) - 1)
+    pair = allNamesCopy[randomPersonIndex]
+    return pair, randomPersonIndex
 
 
 def drawingResult(request):
