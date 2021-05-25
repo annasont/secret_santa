@@ -30,31 +30,7 @@ def home(request):
             errorMessages = standardValidation(formset)
 
             # Additional validation.
-            errorMessages += additionalValidation(request, errorMessages)
-            # names = []
-            # emails = []
-            # for i in range(int(request.POST['form-TOTAL_FORMS'])):
-            #     # Can not accept empty rows:
-            #     if request.POST[f'form-{i}-name'] == '' and request.POST[f'form-{i}-email'] == '':
-            #         text = 'Uzupełnij brakujące rzędy.'
-            #         if text not in errorMessages:
-            #             errorMessages.append(text)
-                
-            #     # Can not accept same names:
-            #     if request.POST[f'form-{i}-name'] in names:
-            #         text = 'Imiona nie mogą się powtarzać (jeżeli w losowaniu biorą udział osoby o tych samych imionach, wpisz ksywy / nazwiska / coś co pozwoli zidentyfikować właściwą osobę).'
-            #         if text not in errorMessages:
-            #             errorMessages.append(text)
-            #     else:
-            #         names.append(request.POST[f'form-{i}-name'])
-
-            #     # Can not accept same email addresses:
-            #     if request.POST[f'form-{i}-email'] in emails:
-            #         text = 'Adresy email nie mogą się powtarzać.'
-            #         if text not in errorMessages:
-            #             errorMessages.append(text)   
-            #     else:
-            #         emails.append(request.POST[f'form-{i}-email'])
+            errorMessages += additionalValidation(request)
 
             # Displaying all errors
             for message in errorMessages:
@@ -183,7 +159,8 @@ def standardValidation(formset):
             errorMessages = finalFormsetErrors(formset)
     return errorMessages
 
-def doNotAcceptEmptyRows(request, errorMessages):
+def doNotAcceptEmptyRows(request):
+    errorMessages = []
     for i in range(int(request.POST['form-TOTAL_FORMS'])):
         if request.POST[f'form-{i}-name'] == '' and request.POST[f'form-{i}-email'] == '':
             text = 'Uzupełnij brakujące rzędy.'
@@ -191,7 +168,8 @@ def doNotAcceptEmptyRows(request, errorMessages):
                 errorMessages.append(text)
     return errorMessages
 
-def doNotAcceptSameNames(request, errorMessages):
+def doNotAcceptSameNames(request):
+    errorMessages = []
     names = []
     for i in range(int(request.POST['form-TOTAL_FORMS'])):
         if request.POST[f'form-{i}-name'] in names:
@@ -202,7 +180,8 @@ def doNotAcceptSameNames(request, errorMessages):
             names.append(request.POST[f'form-{i}-name'])
     return errorMessages
 
-def doNotAcceptSameEmailAddresses(request, errorMessages):
+def doNotAcceptSameEmailAddresses(request):
+    errorMessages = []
     emails = []
     for i in range(int(request.POST['form-TOTAL_FORMS'])):
         if request.POST[f'form-{i}-email'] in emails:
@@ -213,10 +192,11 @@ def doNotAcceptSameEmailAddresses(request, errorMessages):
             emails.append(request.POST[f'form-{i}-email'])
     return errorMessages
 
-def additionalValidation(request, errorMessages):
-    errorMessages += doNotAcceptEmptyRows(request, errorMessages)
-    errorMessages += doNotAcceptSameNames(request, errorMessages)
-    errorMessages += doNotAcceptSameEmailAddresses(request, errorMessages)
+def additionalValidation(request):
+    errorMessages = []
+    errorMessages += doNotAcceptEmptyRows(request)
+    errorMessages += doNotAcceptSameNames(request)
+    errorMessages += doNotAcceptSameEmailAddresses(request)
     return errorMessages
 
 
