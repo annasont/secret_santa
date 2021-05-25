@@ -27,46 +27,34 @@ def home(request):
             formset = ParticipantsFormset(request.POST)
             
             # Standard validation
-            if formset.is_valid():
-                pass
-            else:
-                errorMsg = []
-                if formset.errors:
-                    for i in range(len(formset.errors)):
-                        for key in formset.errors[i]:
-                            if formset.errors[i][key]:
-                                errorMsg.append(formset.errors[i][key])
-
-                    if ['This field is required.'] in errorMsg:
-                        errorMessages.append('Uzupełnij brakujące pola.')
-                    if ['Enter a valid email address.'] in errorMsg:
-                        errorMessages.append('Niepoprawny adres email.')
+            errorMessages = standardValidation(formset)
 
             # Additional validation.
-            names = []
-            emails = []
-            for i in range(int(request.POST['form-TOTAL_FORMS'])):
-                # Can not accept empty rows:
-                if request.POST[f'form-{i}-name'] == '' and request.POST[f'form-{i}-email'] == '':
-                    text = 'Uzupełnij brakujące rzędy.'
-                    if text not in errorMessages:
-                        errorMessages.append(text)
+            errorMessages += additionalValidation(request, errorMessages)
+            # names = []
+            # emails = []
+            # for i in range(int(request.POST['form-TOTAL_FORMS'])):
+            #     # Can not accept empty rows:
+            #     if request.POST[f'form-{i}-name'] == '' and request.POST[f'form-{i}-email'] == '':
+            #         text = 'Uzupełnij brakujące rzędy.'
+            #         if text not in errorMessages:
+            #             errorMessages.append(text)
                 
-                # Can not accept same names:
-                if request.POST[f'form-{i}-name'] in names:
-                    text = 'Imiona nie mogą się powtarzać (jeżeli w losowaniu biorą udział osoby o tych samych imionach, wpisz ksywy / nazwiska / coś co pozwoli zidentyfikować właściwą osobę).'
-                    if text not in errorMessages:
-                        errorMessages.append(text)
-                else:
-                    names.append(request.POST[f'form-{i}-name'])
+            #     # Can not accept same names:
+            #     if request.POST[f'form-{i}-name'] in names:
+            #         text = 'Imiona nie mogą się powtarzać (jeżeli w losowaniu biorą udział osoby o tych samych imionach, wpisz ksywy / nazwiska / coś co pozwoli zidentyfikować właściwą osobę).'
+            #         if text not in errorMessages:
+            #             errorMessages.append(text)
+            #     else:
+            #         names.append(request.POST[f'form-{i}-name'])
 
-                # Can not accept same email addresses:
-                if request.POST[f'form-{i}-email'] in emails:
-                    text = 'Adresy email nie mogą się powtarzać.'
-                    if text not in errorMessages:
-                        errorMessages.append(text)   
-                else:
-                    emails.append(request.POST[f'form-{i}-email'])
+            #     # Can not accept same email addresses:
+            #     if request.POST[f'form-{i}-email'] in emails:
+            #         text = 'Adresy email nie mogą się powtarzać.'
+            #         if text not in errorMessages:
+            #             errorMessages.append(text)   
+            #     else:
+            #         emails.append(request.POST[f'form-{i}-email'])
 
             # Displaying all errors
             for message in errorMessages:
@@ -88,10 +76,10 @@ def home(request):
                 # for every person 
                 for i in range(len(allNames)):
                     # find pair
-                    pair, randomPersonIndex = randomPair(allNames, allNamesCopy)
+                    pair, randomPersonIndex = randomPair(allNamesCopy)
                     # you can not make a gift for yourself. If so, draw again:
                     while allNames[i] == pair:
-                        pair, randomPersonIndex = randomPair(allNames, allNamesCopy)
+                        pair, randomPersonIndex = randomPair(allNamesCopy)
                     pairs.append((allNames[i], pair))
                     allNamesCopy.pop(randomPersonIndex)
                 
@@ -166,7 +154,73 @@ def subtractRow(request, ParticipantsFormset):
         formset, error = subtractRowSuccess(request, ParticipantsFormset)
     return formset, error
 
-def randomPair(allNames, allNamesCopy):
+def checkForStandartFormsetErrors(formset):
+    errorMsg = []
+    for i in range(len(formset.errors)):
+        for key in formset.errors[i]:
+            if formset.errors[i][key]:
+                errorMsg.append(formset.errors[i][key])
+    return errorMsg
+
+def translatingStandartFormsetErrorsToPolish(errorMsg):
+    errorMessages = []
+    if ['This field is required.'] in errorMsg:
+        errorMessages.append('Uzupełnij brakujące pola.')
+    if ['Enter a valid email address.'] in errorMsg:
+        errorMessages.append('Niepoprawny adres email.')
+    return errorMessages
+
+def finalFormsetErrors(formset):
+    errorMsg = checkForStandartFormsetErrors(formset)
+    errorMessages = translatingStandartFormsetErrorsToPolish(errorMsg)
+    return errorMessages
+
+def standardValidation(formset):
+    if formset.is_valid():
+        errorMessages = []
+    else:
+        if formset.errors:
+            errorMessages = finalFormsetErrors(formset)
+    return errorMessages
+
+def doNotAcceptEmptyRows(request, errorMessages):
+    for i in range(int(request.POST['form-TOTAL_FORMS'])):
+        if request.POST[f'form-{i}-name'] == '' and request.POST[f'form-{i}-email'] == '':
+            text = 'Uzupełnij brakujące rzędy.'
+            if text not in errorMessages:
+                errorMessages.append(text)
+    return errorMessages
+
+def doNotAcceptSameNames(request, errorMessages):
+    names = []
+    for i in range(int(request.POST['form-TOTAL_FORMS'])):
+        if request.POST[f'form-{i}-name'] in names:
+            text = 'Imiona nie mogą się powtarzać (jeżeli w losowaniu biorą udział osoby o tych samych imionach, wpisz ksywy / nazwiska / coś co pozwoli zidentyfikować właściwą osobę).'
+            if text not in errorMessages:
+                errorMessages.append(text)
+        else:
+            names.append(request.POST[f'form-{i}-name'])
+    return errorMessages
+
+def doNotAcceptSameEmailAddresses(request, errorMessages):
+    emails = []
+    for i in range(int(request.POST['form-TOTAL_FORMS'])):
+        if request.POST[f'form-{i}-email'] in emails:
+            text = 'Adresy email nie mogą się powtarzać.'
+            if text not in errorMessages:
+                errorMessages.append(text)   
+        else:
+            emails.append(request.POST[f'form-{i}-email'])
+    return errorMessages
+
+def additionalValidation(request, errorMessages):
+    errorMessages += doNotAcceptEmptyRows(request, errorMessages)
+    errorMessages += doNotAcceptSameNames(request, errorMessages)
+    errorMessages += doNotAcceptSameEmailAddresses(request, errorMessages)
+    return errorMessages
+
+
+def randomPair(allNamesCopy):
     '''Finding random pair'''
     randomPersonIndex = random.randint(0, len(allNamesCopy) - 1)
     pair = allNamesCopy[randomPersonIndex]
