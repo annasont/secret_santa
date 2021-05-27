@@ -25,24 +25,16 @@ def home(request):
         # Drawing (button "Losuj" pressed)
         elif request.POST['addSubtractOrDraw'] == 'draw':
             formset = ParticipantsFormset(request.POST)
-            
-            # Standard validation
-            errorMessages = standardValidation(formset)
-
-            # Additional validation.
-            errorMessages += additionalValidation(request)
+            errorMessages = fullValidation(request, formset)
 
             # Displaying all errors
             for message in errorMessages:
                 messages.error(request, message)
 
             # If formset is valid
-            group = {}       
+           
             if formset.is_valid() and errorMessages == []:
-                # And creating dictionary "group" with participatns names and emails in following format:
-                # group['name'] = {'email': 'email@example.com'}
-                for i in range(int(request.POST['form-TOTAL_FORMS'])):
-                    group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']}
+                group = createDictWithFormData(request)
                 
                 # creating list with all participtants names
                 allNames = list(group.keys())
@@ -198,6 +190,21 @@ def additionalValidation(request):
     errorMessages += doNotAcceptSameNames(request)
     errorMessages += doNotAcceptSameEmailAddresses(request)
     return errorMessages
+
+def fullValidation(request, formset):
+    errorMessages = standardValidation(formset)
+    errorMessages += additionalValidation(request)
+    return errorMessages
+
+def createDictWithFormData(request):
+    '''creating dictionary with participatns names and emails in following format:
+    group['name'] = {'email': 'email@example.com'}'''
+    group = {}
+    for i in range(int(request.POST['form-TOTAL_FORMS'])):
+        group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']}
+    return group
+                
+
 
 
 def randomPair(allNamesCopy):
