@@ -9,7 +9,6 @@ import random, smtplib, os
 
 def home(request):
     ParticipantsFormset = formset_factory(ParticipantsForm, extra=3)
-    pairs = []
 
     if request.method == 'POST':
         if request.POST['addSubtractOrDraw'] == 'add':
@@ -28,12 +27,12 @@ def home(request):
            
             if formset.is_valid() and errorMessages == []:
                 group = createDictWithFormData(request)
-                allNames = createListWithAllParticipantsNames(group)
-                pairs = findPairForEveryParticipant(allNames)
+                pairs = findRandomPairs(group)
                 
                 """send emails"""
                 # errorMessagesFromSendingEmail = sendEmailToEveryParticipant(pairs, group)
-                # ifErrorWhileSendingEmail(errorMessagesFromSendingEmail, request, group)            
+                errorMessagesFromSendingEmail = [False, False, False]
+                ifErrorWhileSendingEmail(errorMessagesFromSendingEmail, request, group)            
                 
     else:
         #if no POST data - show empty form with 3 rows
@@ -42,8 +41,7 @@ def home(request):
 
     context = {
         'title': 'Home',
-        'formset': formset,
-        'paris': pairs
+        'formset': formset
     }
     return render(request, 'draw/home.html', context)
 
@@ -233,7 +231,7 @@ def ifErrorWhileSendingEmail(errorMessagesFromSendingEmail, request, group):
     if True in errorMessagesFromSendingEmail:
         generateErrorIfSendingEmailFails(request)
     else:
-        redirectToDrawingResultPage(group, request)
+        return redirectToDrawingResultPage(group, request)
 
 
 def drawingResult(request):
