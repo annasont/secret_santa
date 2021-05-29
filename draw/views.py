@@ -30,10 +30,11 @@ def home(request):
                 pairs = findRandomPairs(group)
                 
                 """send emails"""
-                # errorMessagesFromSendingEmail = sendEmailToEveryParticipant(pairs, group)
-                errorMessagesFromSendingEmail = [False, False, False]
-                ifErrorWhileSendingEmail(errorMessagesFromSendingEmail, request, group)            
-                
+                errorMessagesFromSendingEmail = sendEmailToEveryParticipant(pairs, group)
+                if True in errorMessagesFromSendingEmail:
+                    generateErrorIfSendingEmailFails(request)
+                else:
+                    return redirectToDrawingResultPage(group, request)                          
     else:
         #if no POST data - show empty form with 3 rows
         formset = generateEmptyForm(ParticipantsFormset)
@@ -226,13 +227,6 @@ def redirectToDrawingResultPage(group, request):
     allParticipants = createDictWithAllParticipatsNamesAndEmails(group)
     request.session['participants'] = allParticipants
     return redirect('draw-drawing-result')
-
-def ifErrorWhileSendingEmail(errorMessagesFromSendingEmail, request, group):
-    if True in errorMessagesFromSendingEmail:
-        generateErrorIfSendingEmailFails(request)
-    else:
-        return redirectToDrawingResultPage(group, request)
-
 
 def drawingResult(request):
     return render(request, 'draw/drawing-result.html')
