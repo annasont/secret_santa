@@ -9,20 +9,15 @@ import random, smtplib, os
 
 def home(request):
     ParticipantsFormset = formset_factory(ParticipantsForm, extra=3)
-    
-    errorMessages = []
     pairs = []
 
     if request.method == 'POST':
-        # Adding new row (button "+ Dodaj kolejną osobę" pressed)
         if request.POST['addSubtractOrDraw'] == 'add':
             formset = addRow(request, ParticipantsFormset)
 
-        # Deliting last row (button "- Usuń ostatni rząd pressed")
         elif request.POST['addSubtractOrDraw'] == 'subtract':
             formset, error = subtractRow(request, ParticipantsFormset)
             
-        # Drawing (button "Losuj" pressed)
         elif request.POST['addSubtractOrDraw'] == 'draw':
             formset = ParticipantsFormset(request.POST)
             errorMessages = fullValidation(request, formset)
@@ -30,46 +25,15 @@ def home(request):
             # Displaying all errors
             for message in errorMessages:
                 messages.error(request, message)
-
-            # If formset is valid
            
             if formset.is_valid() and errorMessages == []:
                 group = createDictWithFormData(request)
-                
-                # creating list with all participtants names
-                allNames = list(group.keys())
-                allNamesCopy = allNames[:]
-                
-
-                # for every person 
-                for i in range(len(allNames)):
-                    # find pair
-                    pair, randomPersonIndex = randomPair(allNamesCopy)
-                    # you can not make a gift for yourself. If so, draw again:
-                    while allNames[i] == pair:
-                        pair, randomPersonIndex = randomPair(allNamesCopy)
-                    pairs.append((allNames[i], pair))
-                    allNamesCopy.pop(randomPersonIndex)
+                allNames = createListWithAllParticipantsNames(group)
+                pairs = findPairForEveryParticipant(allNames)
                 
                 """send emails"""
-                message = False
-                for i in range(len(pairs)):
-                    personWho = pairs[i][0]
-                    personWhom = pairs[i][1]
-                    sendTo = group[personWho]['email']
-                    title = 'Losowanie secret santa'
-                    mailMessage = f'Cześć {personWho}\nBierzesz udział w losownaniu secret santa.\nOsoba, której robisz prezent to: {personWhom}.\nPozdrawiam,\nSecret santa'
-                    # try:
-                    #     send_mail(title, mailMessage, 'secretsanta.losowanie@gmail.com', [sendTo])
-                    # except:
-                    #     message = True
-                    
-                if message == True:
-                    messages.error(request, 'Wystąpił problem z wysłaniem maili. Spróbuj ponownie później.')
-                if message == False:
-                    allParticipants = createDictWithAllParticipatsNamesAndEmails(group)
-                    request.session['participants'] = allParticipants
-                    return redirect('draw-drawing-result')             
+                # errorMessagesFromSendingEmail = sendEmailToEveryParticipant(pairs, group)
+                # ifErrorWhileSendingEmail(errorMessagesFromSendingEmail, request, group)            
                 
     else:
         #if no POST data - show empty form with 3 rows
@@ -79,7 +43,7 @@ def home(request):
     context = {
         'title': 'Home',
         'formset': formset,
-        'pairs': pairs,
+        'paris': pairs
     }
     return render(request, 'draw/home.html', context)
 
@@ -195,6 +159,62 @@ def fullValidation(request, formset):
     errorMessages = standardValidation(formset)
     errorMessages += additionalValidation(request)
     return errorMessages
+                
+def createListWithAllParticipantsNames(group):
+    allNames = list(group.keys())
+    return allNames
+
+def randomPair(allNamesCopy):
+    '''Finding random pair'''
+    randomPersonIndex = random.randint(0, len(allNamesCopy) - 1)
+    pair = allNamesCopy[randomPersonIndex]
+    return pair, randomPersonIndex
+
+def findPairForEveryParticipant(allNames):
+    allNamesCopy = allNames[:]
+    pairs = []        
+    # for every person 
+    for i in range(len(allNames)):
+        # find pair
+        pair, randomPersonIndex = randomPair(allNamesCopy)
+        # you can not make a gift for yourself. If so, draw again:
+        while allNames[i] == pair:
+            pair, randomPersonIndex = randomPair(allNamesCopy)
+        pairs.append((allNames[i], pair))
+        allNamesCopy.pop(randomPersonIndex)
+    return pairs
+
+def findRandomPairs(group):
+    allNames = createListWithAllParticipantsNames(group)
+    pairs = findPairForEveryParticipant(allNames)
+    return pairs
+
+def prepareDataForSendingEmail(pairs, group, i):
+    personWho = pairs[i][0]
+    personWhom = pairs[i][1]
+    sendTo = group[personWho]['email']
+    title = 'Losowanie secret santa'
+    mailMessage = f'Cześć {personWho}\nBierzesz udział w losownaniu secret santa.\nOsoba, której robisz prezent to: {personWhom}.\nPozdrawiam,\nSecret santa'
+    return title, mailMessage, sendTo
+
+
+def sendEmail(title, mailMessage, sendTo):
+    try:
+        send_mail(title, mailMessage, 'secretsanta.losowanie@gmail.com', [sendTo])
+        errorMessageSendEmail = False
+    except:
+        errorMessageSendEmail = True
+    return errorMessageSendEmail
+
+def sendEmailToEveryParticipant(pairs, group):
+    errorMessagesFromSendingEmail = []
+    for i in range(len(pairs)):
+        title, mailMessage, sendTo = prepareDataForSendingEmail(pairs, group, i)
+        errorMessagesFromSendingEmail.append(sendEmail(title, mailMessage, sendTo))
+    return errorMessagesFromSendingEmail
+
+def generateErrorIfSendingEmailFails(request):
+    messages.error(request, 'Wystąpił problem z wysłaniem maili. Spróbuj ponownie później.')
 
 def createDictWithFormData(request):
     '''creating dictionary with participatns names and emails in following format:
@@ -203,15 +223,17 @@ def createDictWithFormData(request):
     for i in range(int(request.POST['form-TOTAL_FORMS'])):
         group[request.POST[f'form-{i}-name']] = {'email': request.POST[f'form-{i}-email']}
     return group
-                
 
+def redirectToDrawingResultPage(group, request):
+    allParticipants = createDictWithAllParticipatsNamesAndEmails(group)
+    request.session['participants'] = allParticipants
+    return redirect('draw-drawing-result')
 
-
-def randomPair(allNamesCopy):
-    '''Finding random pair'''
-    randomPersonIndex = random.randint(0, len(allNamesCopy) - 1)
-    pair = allNamesCopy[randomPersonIndex]
-    return pair, randomPersonIndex
+def ifErrorWhileSendingEmail(errorMessagesFromSendingEmail, request, group):
+    if True in errorMessagesFromSendingEmail:
+        generateErrorIfSendingEmailFails(request)
+    else:
+        redirectToDrawingResultPage(group, request)
 
 
 def drawingResult(request):
