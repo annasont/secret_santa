@@ -4,8 +4,7 @@ from django.contrib import messages
 from .forms import ParticipantsForm
 from django.forms import formset_factory
 from django.core.mail import send_mail
-import random, smtplib, os
-
+import random
 
 def home(request):
     ParticipantsFormset = formset_factory(ParticipantsForm, extra=3)
@@ -127,7 +126,9 @@ def doNotAcceptSameNames(request):
     errorMessages = []
     names = []
     for i in range(int(request.POST['form-TOTAL_FORMS'])):
-        if request.POST[f'form-{i}-name'] in names:
+        if request.POST[f'form-{i}-name'] == '':
+            continue
+        elif request.POST[f'form-{i}-name'] in names:
             text = 'Imiona nie mogą się powtarzać (jeżeli w losowaniu biorą udział osoby o tych samych imionach, wpisz ksywy / nazwiska / coś co pozwoli zidentyfikować właściwą osobę).'
             if text not in errorMessages:
                 errorMessages.append(text)
@@ -139,6 +140,8 @@ def doNotAcceptSameEmailAddresses(request):
     errorMessages = []
     emails = []
     for i in range(int(request.POST['form-TOTAL_FORMS'])):
+        if request.POST[f'form-{i}-email'] == '':
+            continue
         if request.POST[f'form-{i}-email'] in emails:
             text = 'Adresy email nie mogą się powtarzać.'
             if text not in errorMessages:
