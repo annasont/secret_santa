@@ -1,6 +1,6 @@
 __pycache__/
 .vscode/
 *.[oa]
-#*.sqlite3
+*.sqlite3
 *.log
 venv/
