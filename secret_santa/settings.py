@@ -136,3 +136,5 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('SECRETSANTA_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('SECRETSANTA_PASS')
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
