@@ -36,6 +36,7 @@ ALLOWED_HOSTS = ['localhost']
 
 INSTALLED_APPS = [
     'draw.apps.DrawConfig',
+    'draw.apps.UsersConfig',
     'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',
