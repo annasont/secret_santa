@@ -1,5 +1,4 @@
 {% extends "draw/base.html" %}
-{% load crispy_forms_tags %}
 {% block content %}
     <div class="container pt-5">
         <div class="jumbotron">
@@ -8,7 +7,38 @@
         <form method='POST'>
             {% csrf_token %}
             <fieldset class="form-group">
-                {{ form|linebreaks }}
+                <div>
+                    {% if form.errors %}
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <div class="alert alert-danger">{{ error|escape }}</div>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <div class="alert alert-danger">{{ error|escape }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div>
+                    {{ form.username.label }}
+                    {{ form.username }}
+                    {{ form.username.help_text}}
+                </div>
+                <div>
+                    {{ form.email.label }}
+                    {{ form.email }}
+                </div>
+                <div>
+                    {{ form.password1.label }}
+                    {{ form.password1 }}
+                    {{ form.password1.help_text|linebreaks}}
+                </div>
+                <div>
+                    {{ form.password2.label }}
+                    {{ form.password2 }}
+                    {{ form.password2.help_text}}
+                </div>
+
             </fieldset>
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">Utwórz konto</button>

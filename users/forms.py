@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+
 # from django.utils.translation import ugettext_lazy as _
 
 class UserRegisterForm(UserCreationForm):
@@ -19,11 +20,15 @@ class UserRegisterForm(UserCreationForm):
         help_text='Wprowadź takie same hasło jak powyżej.',
     )
 
+    error_messages = {
+        'password_mismatch': "Hasła muszą być takie same.",
+    }
+
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
         labels = {
-            'username': 'Imię',
+            'username': 'Nazwa użytkownika',
         }
         help_texts = {
             'username': 'Maksymalnie 150 znaków. Używaj wyłącznie liter, cyfr oraz @/./+/-/_.'
