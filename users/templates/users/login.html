@@ -2,7 +2,7 @@
 {% block content %}
     <div class="container pt-5">
         <div class="jumbotron">
-            <h1 class="display-4">Create account</h1>
+            <h1 class="display-4">Log in</h1>
         </div>
         <form method='POST'>
             {% csrf_token %}
@@ -19,30 +19,19 @@
                         {% endfor %}
                     {% endif %}
                 </div>
-                <div class="form-group mb-1">
-                    <label>{{ form.username.label }}</label>
-                    {{ form.username }}
-                    <small class="form-text text-muted">{{ form.username.help_text}}</small>
-                </div>
-                <div class="form-group mb-1">
-                    <label>{{ form.email.label }}</label>
-                    {{ form.email }}
-                </div>
-                <div class="form-group mb-1">
-                    <label>{{ form.password1.label }}</label>
-                    {{ form.password1 }}
-                    <small class="form-text text-muted">{{ form.password1.help_text|linebreaks}}</small>
-                </div>
                 <div class="form-group mb-2">
-                    <label> {{ form.password2.label }}</label>
-                    {{ form.password2 }}
-                    <small class="form-text text-muted">{{ form.password2.help_text}}</small>
+                    <label>{{ form.username.label }}</label>
+                    <div>{{ form.username }}</div>
+                </div>
+                <div class="form-group mb-3">
+                    <label>{{ form.password.label }}</label>
+                    <div>{{ form.password }}</div>
                 </div>
             </fieldset>
             <div class="form-group mb-2">
-                <button type="submit" class="btn btn-primary">Sign up</button>
+                <button type="submit" class="btn btn-primary">Login</button>
                 <small class="text-muted">
-                    Already have an account? <a href={% url 'login'%}>Sign in</a>
+                    Need an account? <a href={% url 'register'%}>Sign up</a>
                 </small>
             </div>
         </form>
