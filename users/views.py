@@ -28,3 +28,6 @@ def loginUser(request):
     else:
         form = UserLoginForm()
     return render(request, 'users/login.html', {'form': form})
+
+def profile(request):
+    return render (request, 'users/profile.html')
