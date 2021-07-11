@@ -141,3 +141,5 @@ EMAIL_HOST_USER = os.environ.get('SECRETSANTA_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('SECRETSANTA_PASS')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+LOGIN_URL = 'login'
