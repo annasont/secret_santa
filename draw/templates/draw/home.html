@@ -1,15 +1,8 @@
 {% extends "draw/base.html" %}
 {% block content %}
-    <div class="container pt-5">
-        <div class="jumbotron">
-            <h1 class="display-4">Komu zrobić prezent?</h1>
-            <p class="lead">Przeprowadź losowanie "secret santa": Wpisz imiona osób, które biorą udział w losowaniu, oraz ich adresy e-mail. Każdy z uczestników otrzyma maila z imieniem wylosowanej osoby, której będzie robić prezent.</p>
-        </div>
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
+    <div class="container pt-2">
+        <h2>Komu zrobić prezent?</h2>
+        <p class="lead">Przeprowadź losowanie "secret santa": Wpisz imiona osób, które biorą udział w losowaniu, oraz ich adresy e-mail. Każdy z uczestników otrzyma maila z imieniem wylosowanej osoby, której będzie robić prezent.</p>
      
         <form id="namesAndEmails" class="row g-3" method="POST">
             {{ formset.management_form }}

@@ -1,9 +1,7 @@
 {% extends "draw/base.html" %}
 {% block content %}
-    <div class="container pt-5">
-        <div class="jumbotron">
-            <h1 class="display-4">Log in</h1>
-        </div>
+    <div class="container pt-2">
+        <h2>Log in</h2>
         <form method='POST'>
             {% csrf_token %}
             <fieldset class="form-group">
