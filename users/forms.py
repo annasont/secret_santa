@@ -18,7 +18,7 @@ class UserRegisterForm(UserCreationForm):
         model = User
         fields = ['username', 'email', 'password1', 'password2']
         help_texts = {
-            'username': '150 characters or fewer. Letters, digits and @/./+/-/_ only.',
+            'username': '150 characters or fewer. Letters, digits and @ . + - _ only.',
         }
        
 class UserLoginForm(AuthenticationForm):
