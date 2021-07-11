@@ -36,12 +36,18 @@
                             </li>
                         </ul>
                         <ul class="navbar-nav mmy-2 my-lg-0">
-                            <li>
-                                <a class="nav-link active" aria-current="page" href="{% url 'login'%}">Log in</a>
-                            </li>
-                            <li>
-                                <a class="nav-link active" aria-current="page" href="{% url 'register'%}">Register</a>
-                            </li>
+                            {% if user.is_authenticated %}
+                                <li>
+                                    <a class="nav-link active" aria-current="page" href="{% url 'logout' %}">Log out</a>
+                                </li>
+                            {% else %}
+                                <li>
+                                    <a class="nav-link active" aria-current="page" href="{% url 'login' %}">Log in</a>
+                                </li>
+                                <li>
+                                    <a class="nav-link active" aria-current="page" href="{% url 'register' %}">Register</a>
+                                </li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>
