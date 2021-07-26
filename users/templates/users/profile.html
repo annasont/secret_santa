@@ -2,5 +2,20 @@
 {% block content %}
     <div class="container pt-2">
         <h2>{{ user.username }}</h2>
+        <h2>{{ userParticipants }}</h2>
+
+        {% for form in formset %}
+            <div class="row">
+                <div class="form-group col-sm-1 mb-3">
+                    <label class="col-form-label">{{ forloop.counter }}.</label>
+                </div>
+                <div class="form-group col-sm-4 mb-3">
+                    {{ form.name }}
+                </div>
+                <div class="form-group col-sm-7 mb-3">
+                    {{ form.email }}
+                </div>
+            </div> 
+        {% endfor %}
     </div>
 {% endblock content %}

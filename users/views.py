@@ -2,7 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.forms import formset_factory
+from django.contrib.auth.models import User
 from .forms import UserRegisterForm, UserLoginForm
+from draw.forms import ParticipantsForm
 
 def register(request):
     if request.method == 'POST':
@@ -33,4 +36,18 @@ def loginUser(request):
 
 @login_required
 def profile(request):
-    return render (request, 'users/profile.html')
+    if request.user.is_authenticated:
+        userLoggedIn = request.user.username
+    
+    currentUser = User.objects.filter(username=userLoggedIn).first()
+    userParticipants = currentUser.participant_set.all()
+
+
+    ParticipantsFormset = formset_factory(ParticipantsForm, extra=3)
+    formset = ParticipantsFormset()
+    
+    context = {
+        'formset': formset,
+        'userParticipants': userParticipants
+    }
+    return render (request, 'users/profile.html', context)
