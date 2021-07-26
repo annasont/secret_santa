@@ -42,13 +42,11 @@ def profile(request):
         userLoggedIn = request.user.username
     
     currentUser = User.objects.filter(username=userLoggedIn).first()
-    userParticipants = currentUser.participant_set.all()
 
     ParticipantsFormset = inlineformset_factory(User, Participant, fields=('name', 'email'), extra=3)
-    formset = ParticipantsFormset()
+    formset = ParticipantsFormset(instance=currentUser)
     
     context = {
-        'formset': formset,
-        'userParticipants': userParticipants
+        'formset': formset
     }
     return render (request, 'users/profile.html', context)
