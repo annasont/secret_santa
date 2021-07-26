@@ -7,7 +7,7 @@ from django.core.mail import send_mail
 import random
 
 def home(request):
-    ParticipantsFormset = formset_factory(ParticipantsForm, extra=3)
+    ParticipantsFormset = formset_factory(ParticipantsForm, min_num=3)
 
     if request.method == 'POST':
         if request.POST['addSubtractOrDraw'] == 'add':

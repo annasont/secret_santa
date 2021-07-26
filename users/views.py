@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.forms import inlineformset_factory
 from django.contrib.auth.models import User
 from .forms import UserRegisterForm, UserLoginForm
-# from draw.forms import ParticipantsForm
+from draw.forms import ParticipantsForm
 from draw.models import Participant
 
 def register(request):
@@ -43,7 +43,7 @@ def profile(request):
     
     currentUser = User.objects.filter(username=userLoggedIn).first()
 
-    ParticipantsFormset = inlineformset_factory(User, Participant, fields=('name', 'email'), extra=3)
+    ParticipantsFormset = inlineformset_factory(User, Participant, form=ParticipantsForm, min_num=3)
     formset = ParticipantsFormset(instance=currentUser)
     
     context = {
