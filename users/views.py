@@ -38,28 +38,35 @@ def loginUser(request):
 @login_required
 def profile(request):
     if request.user.is_authenticated:
-        userLoggedIn = request.user.username
-        currentUser = User.objects.filter(username=userLoggedIn).first()
+        currentUser = getCurrentUser(request)
+        formset = formsetWithDataFromDB(currentUser)
 
-        ParticipantsFormset = inlineformset_factory(User, Participant, form=ParticipantsForm, extra=0)
-        formset = ParticipantsFormset(instance=currentUser)
-
-        email = 'Brrr'
-        rowToDelete = 'Nic'
+        rowToDelete = ''
         if request.method == 'POST':
             if request.POST['delete']:
-                rowNumber = int(request.POST['delete']) - 1
-                email = request.POST[f'participant_set-{rowNumber}-email']
-                rowToDelete = currentUser.participant_set.get(email=email)
-                rowToDelete.delete()
-                ParticipantsFormset = inlineformset_factory(User, Participant, form=ParticipantsForm, extra=0)
+                rowToDelete = deleteRowFromDB(request, currentUser)
                 messages.success(request, f'Participant {rowToDelete} has been successfully deleted from database.')
-                formset = ParticipantsFormset(instance=currentUser)
-                
+                formset = formsetWithDataFromDB(currentUser)         
     
     context = {
         'formset': formset,
-        'email': email,
         'rowToDelete': rowToDelete
     }
     return render (request, 'users/profile.html', context)
+
+def getCurrentUser(request):
+    userLoggedIn = request.user.username
+    currentUser = User.objects.filter(username=userLoggedIn).first()
+    return currentUser
+
+def formsetWithDataFromDB(currentUser):
+    ParticipantsFormset = inlineformset_factory(User, Participant, form=ParticipantsForm, extra=0)
+    formset = ParticipantsFormset(instance=currentUser)
+    return formset
+
+def deleteRowFromDB(request, currentUser):
+    rowNumber = int(request.POST['delete']) - 1
+    email = request.POST[f'participant_set-{rowNumber}-email']
+    rowToDelete = currentUser.participant_set.get(email=email)
+    rowToDelete.delete()
+    return rowToDelete
