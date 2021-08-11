@@ -2,24 +2,30 @@
 {% block content %}
     <div class="container pt-2">
         <h2>{{ user.username }}</h2>
-        <h2>{{ userParticipants }}</h2>
-
-        {% for form in formset %}
-            <div class="row">
-                <div class="form-group col-sm-1 mb-3">
-                    <label class="col-form-label">{{ forloop.counter }}.</label>
-                </div>
-                <div class="form-group col-sm-4 mb-3">
-                    {{ form.name }}
-                </div>
-                <div class="form-group col-sm-6 mb-3">
-                    {{ form.email }}
-                </div>
-                <div class="form-group col-sm-1 mb-3">
-                    <button type="submit" class="btn btn-danger" value="draw">Delete</button>
-                </div>
-            </div> 
-        {% endfor %}
+        <h2>{{ email }}</h2>
+        <h2>{{ rowToDelete }}</h2>
+        
+        
+        <form id="namesAndEmailsFromDB" class="row g-3" method="POST">
+            {{ formset.management_form }}
+            {% csrf_token %}
+            {% for form in formset %}
+                <div class="row">
+                    <div class="form-group col-sm-1 mb-3">
+                        <label class="col-form-label">{{ forloop.counter }}.</label>
+                    </div>
+                    <div class="form-group col-sm-4 mb-3">
+                        {{ form.name }}
+                    </div>
+                    <div class="form-group col-sm-6 mb-3" name="trackEmail">
+                        {{ form.email }}
+                    </div>
+                    <div class="form-group col-sm-1 mb-3">
+                        <button type="submit" class="btn btn-danger" name="delete" value="{{ forloop.counter }}">Delete</button>
+                    </div>
+                </div> 
+            {% endfor %}
+        </form>
         <div class="row mt-3">
             <button type="submit" class="btn btn-primary mb-3 rememberScrollPos" name="addSubtractOrDraw" value="add">+ Dodaj kolejną osobę</button>
             <button type="submit" class="btn btn-warning" name="addSubtractOrDraw" value="draw">Losuj</button>

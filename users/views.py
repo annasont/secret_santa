@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-# from django.forms import formset_factory
 from django.forms import inlineformset_factory
 from django.contrib.auth.models import User
 from .forms import UserRegisterForm, UserLoginForm
@@ -40,13 +39,27 @@ def loginUser(request):
 def profile(request):
     if request.user.is_authenticated:
         userLoggedIn = request.user.username
-    
         currentUser = User.objects.filter(username=userLoggedIn).first()
 
-        ParticipantsFormset = inlineformset_factory(User, Participant, form=ParticipantsForm)
+        ParticipantsFormset = inlineformset_factory(User, Participant, form=ParticipantsForm, extra=0)
         formset = ParticipantsFormset(instance=currentUser)
+
+        email = 'Brrr'
+        rowToDelete = 'Nic'
+        if request.method == 'POST':
+            if request.POST['delete']:
+                rowNumber = int(request.POST['delete']) - 1
+                email = request.POST[f'participant_set-{rowNumber}-email']
+                rowToDelete = currentUser.participant_set.get(email=email)
+                rowToDelete.delete()
+                ParticipantsFormset = inlineformset_factory(User, Participant, form=ParticipantsForm, extra=0)
+                messages.success(request, f'Participant {rowToDelete} has been successfully deleted from database.')
+                formset = ParticipantsFormset(instance=currentUser)
+                
     
     context = {
-        'formset': formset
+        'formset': formset,
+        'email': email,
+        'rowToDelete': rowToDelete
     }
     return render (request, 'users/profile.html', context)
