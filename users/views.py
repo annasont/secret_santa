@@ -41,10 +41,10 @@ def profile(request):
     if request.user.is_authenticated:
         userLoggedIn = request.user.username
     
-    currentUser = User.objects.filter(username=userLoggedIn).first()
+        currentUser = User.objects.filter(username=userLoggedIn).first()
 
-    ParticipantsFormset = inlineformset_factory(User, Participant, form=ParticipantsForm, min_num=3)
-    formset = ParticipantsFormset(instance=currentUser)
+        ParticipantsFormset = inlineformset_factory(User, Participant, form=ParticipantsForm)
+        formset = ParticipantsFormset(instance=currentUser)
     
     context = {
         'formset': formset
