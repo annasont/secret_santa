@@ -7,7 +7,6 @@ from django.contrib.auth.models import User
 from .forms import UserRegisterForm, UserLoginForm
 from draw.forms import ParticipantsForm
 from draw.models import Participant
-from draw.views import addRow
 
 def register(request):
     if request.method == 'POST':
@@ -41,36 +40,28 @@ def profile(request):
     if request.user.is_authenticated:
         currentUser = getCurrentUser(request)
         participants = currentUser.participant_set.all()
-        newParticipants = False
         ParticipantsFormset = inlineformset_factory(User, Participant, form=ParticipantsForm, extra=1)
-        formset = ParticipantsFormset()
+        # formset = ParticipantsFormset()
+        form = ParticipantsForm
         test = ''
         
 
         rowToDelete = ''
         if request.method == 'POST':
-            test = request.POST.get('deleteAddSubtractSaveOrDraw')
 
             if request.POST.get('deleteAddSubtractSaveOrDraw') != '' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'add' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'subtract' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'draw':
                 rowToDelete = deleteRowFromDB(request, currentUser)
                 messages.success(request, f'Participant {rowToDelete} has been successfully deleted from database.')
 
-            elif request.POST.get('deleteAddSubtractSaveOrDraw') == 'add':
-                newParticipants = True
-            #     formset = addRow(request, ParticipantsFormset)
-
-            # elif request.POST['addSubtractOrDraw'] == 'subtract':
-            #     formset, error = subtractRow(request, ParticipantsFormset)
+            # elif request.POST.get('deleteAddSubtractSaveOrDraw') == 'save':
             
-            # elif request.POST['addSubtractOrDraw'] == 'draw':
+            # elif request.POST.get('addSubtractOrDraw') == 'draw':
             #     formset = ParticipantsFormset(request.POST)
             #     errorMessages = fullValidation(request, formset)
 
     context = {
-        'formset': formset,
-        'rowToDelete': rowToDelete,
+        'form': form,
         'participants': participants,
-        'newParticipants': newParticipants,
         'test': test
     }
     return render (request, 'users/profile.html', context)

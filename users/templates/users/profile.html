@@ -4,9 +4,7 @@
         <h2>{{ user.username }}</h2>
         <h2>{{ test }}</h2>
         
-        <form id="namesAndEmailsFromDB" class="row g-3" method="POST">
-            {{ formset.management_form }}
-            {% csrf_token %}
+        
         
             <table class="table">
                 <thead>
@@ -18,50 +16,36 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for participant in participants %}
+                    <form id="namesAndEmailsFromDB" class="row g-3" method="POST">
+                        {{ formset.management_form }}
+                        {% csrf_token %}
+                        {% for participant in participants %}
+                            <tr>
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td>{{ participant.name }}</td>
+                                <td>{{ participant.email }}</td>
+                                <td><button type="submit" class="btn btn-danger" name="deleteAddSubtractSaveOrDraw" value="{{ forloop.counter }}">Delete</button></td>
+                            </tr>
+                        {% endfor %}
+                    </form>
+                    <form id="namesAndEmailsNew" class="row g-3" method="POST">
                         <tr>
-                        <th scope="row">{{ forloop.counter }}</th>
-                        <td>{{ participant.name }}</td>
-                        <td>{{ participant.email }}</td>
-                        <td><button type="submit" class="btn btn-danger" name="deleteAddSubtractSaveOrDraw" value="{{ forloop.counter }}">Delete</button></td>
+                            <th scope="row">new</th>
+                            <td><div class="form-group col-sm-6 mb-3">
+                                {{ form.name }}
+                            </div></td>
+                            <td><div class="form-group col-sm-6 mb-3">
+                                {{ form.email }}
+                            </div></td>
+                            <td><button type="submit" class="btn btn-primary" name="deleteAddSubtractSaveOrDraw" value="save">Save</button></td>
                         </tr>
-                    {% endfor %}
+                    </form>
                 </tbody>
-                </table>
-        </form>
-
-        {% if newParticipants %}
-            <p class="mt-3"><strong>Add new participants:</strong></p>
-            <form id="namesAndEmailsNew" class="row mt-3" method="POST">
-                {{ formset.management_form }}
-                {% csrf_token %}
-                {% for form in formset %}
-                    <div class="row">
-                        <div class="form-group col-sm-6 mb-3">
-                            {{ form.name }}
-                        </div>
-                        <div class="form-group col-sm-6 mb-3">
-                            {{ form.email }}
-                        </div>
-                    </div> 
-                {% endfor %}
-            
-                <div class="row mt-3">
-                    <button type="submit" class="btn btn-primary mb-3 rememberScrollPos" name="deleteAddSubtractSaveOrDraw" value="add">+ Add participant</button>
-                    <button type="submit" class="btn btn-primary mb-3 rememberScrollPos" name="deleteAddSubtractSaveOrDraw" value="subtract" >– Remove last row</button>
-                    <button type="submit" class="btn btn-primary mb-3 rememberScrollPos" name="deleteAddSubtractSaveOrDraw" value="update">Save</button>
-                    <button type="submit" class="btn btn-warning rememberScrollPos" name="deleteAddSubtractSaveOrDraw" value="draw">Save & Draw</button>
-                </div>
-            </form>
-        {% else %}
-            <form id="namesAndEmailsNew" class="row mt-3" method="POST">
-                {% csrf_token %}
-                <div class="row mt-3">
-                    <button type="submit" class="btn btn-primary mb-3 rememberScrollPos" name="deleteAddSubtractSaveOrDraw" value="add">+ Add participant</button>
-                    <button type="submit" class="btn btn-warning rememberScrollPos" name="deleteAddSubtractSaveOrDraw" value="draw">Draw</button>
-                </div>
-            </form>        
-        {% endif %}
+            </table>
+            <div class="row mt-3">
+                <button type="submit" class="btn btn-warning rememberScrollPos" name="deleteAddSubtractSaveOrDraw" value="draw">Draw</button>
+            </div>         
+     
     
 
         
