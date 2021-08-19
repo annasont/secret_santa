@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from .forms import UserRegisterForm, UserLoginForm
 from draw.forms import ParticipantsForm
 from draw.models import Participant
+from draw.views import checkForStandartFormsetErrors
 
 def register(request):
     if request.method == 'POST':
@@ -47,6 +48,7 @@ def profile(request):
         
 
         rowToDelete = ''
+        errorMessages = ''
         if request.method == 'POST':
 
             if request.POST.get('deleteAddSubtractSaveOrDraw') != '' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'save' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'draw':
@@ -54,12 +56,23 @@ def profile(request):
                 messages.success(request, f'Participant {rowToDelete} has been successfully deleted from database.')
 
             elif request.POST.get('deleteAddSubtractSaveOrDraw') == 'save':
-                form = ParticipantsForm({'name': request.POST['name'], 'email': request.POST['email'], 'user': currentUser})
+                name = request.POST['name']
+                email = request.POST['email']
+                form = ParticipantsForm({'name': name, 'email': email, 'user': currentUser})
                 if form.is_valid():
-                    form.save()
-                    form = ParticipantsForm()
-                else:
-                    messages.success(request, 'Something went wrong. Please try again.')
+                    if currentUser.participant_set.get(name=name):
+                        messages.error(request, 'Person with that name already exists')
+                    elif currentUser.participant_set.get(email=email):
+                        messages.error(request, 'Person with that email already exists')
+                    else:
+                        form.save()
+                        form = ParticipantsForm()
+            #     else:
+            #         errorMessages = checkForStandartFormsetErrors(form)
+
+            # # Displaying all errors
+            # for message in errorMessages:
+            #     messages.error(request, message)
                     
             
             # elif request.POST.get('addSubtractOrDraw') == 'draw':
