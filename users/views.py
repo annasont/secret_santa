@@ -39,9 +39,11 @@ def loginUser(request):
 def profile(request):
     if request.user.is_authenticated:
         currentUser = getCurrentUser(request)
-        
-
         participants = currentUser.participant_set.all()
+        newParticipants = ''
+        ParticipantsFormset = inlineformset_factory(User, Participant, form=ParticipantsForm, extra=1)
+        formset = ParticipantsFormset()
+        
 
         rowToDelete = ''
         if request.method == 'POST':
@@ -49,13 +51,13 @@ def profile(request):
                 rowToDelete = deleteRowFromDB(request, currentUser)
                 messages.success(request, f'Participant {rowToDelete} has been successfully deleted from database.')        
     
-        ParticipantsFormset = inlineformset_factory(User, Participant, form=ParticipantsForm, extra=1)
-        formset = ParticipantsFormset()
+        
 
     context = {
         'formset': formset,
         'rowToDelete': rowToDelete,
-        'participants': participants
+        'participants': participants,
+        'newParticipants': newParticipants
     }
     return render (request, 'users/profile.html', context)
 
@@ -77,7 +79,7 @@ def getCurrentUser(request):
 #     return rowToDelete
 
 def deleteRowFromDB(request, currentUser):
-    rowNumber = int(request.POST['delete'])
+    rowNumber = int(request.POST['delete']) - 1
     rowToDelete = currentUser.participant_set.all()[rowNumber]
     rowToDelete.delete()
     return rowToDelete
