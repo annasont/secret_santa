@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from .forms import UserRegisterForm, UserLoginForm
 from draw.forms import ParticipantsForm
 from draw.models import Participant
+from draw.views import addRow
 
 def register(request):
     if request.method == 'POST':
@@ -40,18 +41,27 @@ def profile(request):
     if request.user.is_authenticated:
         currentUser = getCurrentUser(request)
         participants = currentUser.participant_set.all()
-        newParticipants = ''
+        newParticipants = False
         ParticipantsFormset = inlineformset_factory(User, Participant, form=ParticipantsForm, extra=1)
         formset = ParticipantsFormset()
         
 
         rowToDelete = ''
         if request.method == 'POST':
-            if request.POST['delete']:
+            if request.POST['deleteAddSubtractOrDraw'] != '' and request.POST['deleteAddSubtractOrDraw'] != 'add' and request.POST['deleteAddSubtractOrDraw'] != 'subtract' and request.POST['deleteAddSubtractOrDraw'] != 'draw':
                 rowToDelete = deleteRowFromDB(request, currentUser)
                 messages.success(request, f'Participant {rowToDelete} has been successfully deleted from database.')        
     
-        
+            elif request.POST['deleteAddSubtractOrDraw'] == 'add':
+                newParticipants = True
+                # formset = addRow(request, ParticipantsFormset)
+
+            # elif request.POST['addSubtractOrDraw'] == 'subtract':
+            #     formset, error = subtractRow(request, ParticipantsFormset)
+            
+            # elif request.POST['addSubtractOrDraw'] == 'draw':
+            #     formset = ParticipantsFormset(request.POST)
+            #     errorMessages = fullValidation(request, formset)
 
     context = {
         'formset': formset,
@@ -79,7 +89,7 @@ def getCurrentUser(request):
 #     return rowToDelete
 
 def deleteRowFromDB(request, currentUser):
-    rowNumber = int(request.POST['delete']) - 1
+    rowNumber = int(request.POST['deleteAddSubtractOrDraw']) - 1
     rowToDelete = currentUser.participant_set.all()[rowNumber]
     rowToDelete.delete()
     return rowToDelete
