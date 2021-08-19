@@ -40,24 +40,31 @@ def profile(request):
     if request.user.is_authenticated:
         currentUser = getCurrentUser(request)
         participants = currentUser.participant_set.all()
-        ParticipantsFormset = inlineformset_factory(User, Participant, form=ParticipantsForm, extra=1)
+        # ParticipantsFormset = inlineformset_factory(User, Participant, form=ParticipantsForm, extra=1)
         # formset = ParticipantsFormset()
-        form = ParticipantsForm
+        form = ParticipantsForm()
         test = ''
         
 
         rowToDelete = ''
         if request.method == 'POST':
 
-            if request.POST.get('deleteAddSubtractSaveOrDraw') != '' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'add' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'subtract' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'draw':
+            if request.POST.get('deleteAddSubtractSaveOrDraw') != '' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'save' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'draw':
                 rowToDelete = deleteRowFromDB(request, currentUser)
                 messages.success(request, f'Participant {rowToDelete} has been successfully deleted from database.')
 
-            # elif request.POST.get('deleteAddSubtractSaveOrDraw') == 'save':
+            elif request.POST.get('deleteAddSubtractSaveOrDraw') == 'save':
+                form = ParticipantsForm({'name': request.POST['name'], 'email': request.POST['email'], 'user': currentUser})
+                if form.is_valid():
+                    form.save()
+                    form = ParticipantsForm()
+                else:
+                    messages.success(request, 'Something went wrong. Please try again.')
+                    
             
             # elif request.POST.get('addSubtractOrDraw') == 'draw':
             #     formset = ParticipantsFormset(request.POST)
-            #     errorMessages = fullValidation(request, formset)
+            #     errorMessages = fullValidation(request, formset) 
 
     context = {
         'form': form,

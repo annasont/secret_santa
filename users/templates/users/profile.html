@@ -29,6 +29,7 @@
                         {% endfor %}
                     </form>
                     <form id="namesAndEmailsNew" class="row g-3" method="POST">
+                        {% csrf_token %}
                         <tr>
                             <th scope="row">new</th>
                             <td><div class="form-group col-sm-6 mb-3">
