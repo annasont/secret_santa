@@ -2,6 +2,7 @@
 {% block content %}
     <div class="container pt-2">
         <h2>{{ user.username }}</h2>
+        <h2>{{ test }}</h2>
         
         <form id="namesAndEmailsFromDB" class="row g-3" method="POST">
             {{ formset.management_form }}
@@ -22,7 +23,7 @@
                         <th scope="row">{{ forloop.counter }}</th>
                         <td>{{ participant.name }}</td>
                         <td>{{ participant.email }}</td>
-                        <td><button type="submit" class="btn btn-danger" name="deleteAddSubtractOrDraw" value="{{ forloop.counter }}">Delete</button></td>
+                        <td><button type="submit" class="btn btn-danger" name="deleteAddSubtractSaveOrDraw" value="{{ forloop.counter }}">Delete</button></td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -46,18 +47,18 @@
                 {% endfor %}
             
                 <div class="row mt-3">
-                    <button type="submit" class="btn btn-primary mb-3 rememberScrollPos" name="deleteAddSubtractOrDraw" value="add">+ Add participant</button>
-                    <button type="submit" class="btn btn-primary mb-3 rememberScrollPos" name="deleteAddSubtractOrDraw" value="subtract" >– Remove last row</button>
-                    <button type="submit" class="btn btn-primary mb-3 rememberScrollPos" name="deleteAddSubtractOrDraw" value="update">Save</button>
-                    <button type="submit" class="btn btn-warning rememberScrollPos" name="deleteAddSubtractOrDraw" value="draw">Save & Draw</button>
+                    <button type="submit" class="btn btn-primary mb-3 rememberScrollPos" name="deleteAddSubtractSaveOrDraw" value="add">+ Add participant</button>
+                    <button type="submit" class="btn btn-primary mb-3 rememberScrollPos" name="deleteAddSubtractSaveOrDraw" value="subtract" >– Remove last row</button>
+                    <button type="submit" class="btn btn-primary mb-3 rememberScrollPos" name="deleteAddSubtractSaveOrDraw" value="update">Save</button>
+                    <button type="submit" class="btn btn-warning rememberScrollPos" name="deleteAddSubtractSaveOrDraw" value="draw">Save & Draw</button>
                 </div>
             </form>
         {% else %}
             <form id="namesAndEmailsNew" class="row mt-3" method="POST">
                 {% csrf_token %}
                 <div class="row mt-3">
-                    <button type="submit" class="btn btn-primary mb-3 rememberScrollPos" name="deleteAddSubtractOrDraw" value="add">+ Add participant</button>
-                    <button type="submit" class="btn btn-warning rememberScrollPos" name="deleteAddSubtractOrDraw" value="draw">Draw</button>
+                    <button type="submit" class="btn btn-primary mb-3 rememberScrollPos" name="deleteAddSubtractSaveOrDraw" value="add">+ Add participant</button>
+                    <button type="submit" class="btn btn-warning rememberScrollPos" name="deleteAddSubtractSaveOrDraw" value="draw">Draw</button>
                 </div>
             </form>        
         {% endif %}

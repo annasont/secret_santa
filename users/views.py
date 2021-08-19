@@ -44,17 +44,20 @@ def profile(request):
         newParticipants = False
         ParticipantsFormset = inlineformset_factory(User, Participant, form=ParticipantsForm, extra=1)
         formset = ParticipantsFormset()
+        test = ''
         
 
         rowToDelete = ''
         if request.method == 'POST':
-            if request.POST['deleteAddSubtractOrDraw'] != '' and request.POST['deleteAddSubtractOrDraw'] != 'add' and request.POST['deleteAddSubtractOrDraw'] != 'subtract' and request.POST['deleteAddSubtractOrDraw'] != 'draw':
+            test = request.POST.get('deleteAddSubtractSaveOrDraw')
+
+            if request.POST.get('deleteAddSubtractSaveOrDraw') != '' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'add' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'subtract' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'draw':
                 rowToDelete = deleteRowFromDB(request, currentUser)
-                messages.success(request, f'Participant {rowToDelete} has been successfully deleted from database.')        
-    
-            elif request.POST['deleteAddSubtractOrDraw'] == 'add':
+                messages.success(request, f'Participant {rowToDelete} has been successfully deleted from database.')
+
+            elif request.POST.get('deleteAddSubtractSaveOrDraw') == 'add':
                 newParticipants = True
-                # formset = addRow(request, ParticipantsFormset)
+            #     formset = addRow(request, ParticipantsFormset)
 
             # elif request.POST['addSubtractOrDraw'] == 'subtract':
             #     formset, error = subtractRow(request, ParticipantsFormset)
@@ -67,7 +70,8 @@ def profile(request):
         'formset': formset,
         'rowToDelete': rowToDelete,
         'participants': participants,
-        'newParticipants': newParticipants
+        'newParticipants': newParticipants,
+        'test': test
     }
     return render (request, 'users/profile.html', context)
 
@@ -89,7 +93,7 @@ def getCurrentUser(request):
 #     return rowToDelete
 
 def deleteRowFromDB(request, currentUser):
-    rowNumber = int(request.POST['deleteAddSubtractOrDraw']) - 1
+    rowNumber = int(request.POST['deleteAddSubtractSaveOrDraw']) - 1
     rowToDelete = currentUser.participant_set.all()[rowNumber]
     rowToDelete.delete()
     return rowToDelete
