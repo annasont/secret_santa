@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .forms import UserRegisterForm, UserLoginForm
 from draw.forms import ParticipantsForm
+from draw.views import findRandomPairs, sendEmailToEveryParticipant, generateErrorIfSendingEmailFails, redirectToDrawingResultPage
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -41,7 +42,6 @@ def profile(request):
         currentUser = getCurrentUser(request)
         participants = currentUser.participant_set.all()
         form = ParticipantsForm()
-        test = ''
         group = ''
         
         if request.method == 'POST':
@@ -63,15 +63,19 @@ def profile(request):
                            
             elif request.POST.get('deleteAddOrDraw') == 'draw':
                 group = createDictWithDataFromDB(currentUser)
+                pairs = findRandomPairs(group)
+                
+                """send emails"""
+                errorMessagesFromSendingEmail = sendEmailToEveryParticipant(pairs, group)
+                if True in errorMessagesFromSendingEmail:
+                    generateErrorIfSendingEmailFails(request)
+                else:
+                    return redirectToDrawingResultPage(group, request) 
 
-            #     formset = ParticipantsFormset(request.POST)
-            #     errorMessages = fullValidation(request, formset) 
 
     context = {
         'form': form,
-        'participants': participants,
-        'test': test,
-        'group': group
+        'participants': participants
     }
     return render (request, 'users/profile.html', context)
 
