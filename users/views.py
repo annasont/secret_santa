@@ -2,12 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-# from django.forms import inlineformset_factory
 from django.contrib.auth.models import User
 from .forms import UserRegisterForm, UserLoginForm
 from draw.forms import ParticipantsForm
 from django.core.exceptions import ObjectDoesNotExist
-# from draw.models import Participant
 
 
 def register(request):
@@ -42,14 +40,9 @@ def profile(request):
     if request.user.is_authenticated:
         currentUser = getCurrentUser(request)
         participants = currentUser.participant_set.all()
-        # ParticipantsFormset = inlineformset_factory(User, Participant, form=ParticipantsForm, extra=1)
-        # formset = ParticipantsFormset()
         form = ParticipantsForm()
         test = ''
         
-
-        rowToDelete = ''
-        # errorMessages = False
         if request.method == 'POST':
 
             if request.POST.get('deleteAddSubtractSaveOrDraw') != '' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'save' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'draw':
@@ -66,8 +59,7 @@ def profile(request):
                     if errorMessageName != True and errorMessageEmail != True:
                         form.save()
                         form = ParticipantsForm()
-                    
-            
+                           
             # elif request.POST.get('addSubtractOrDraw') == 'draw':
             #     formset = ParticipantsFormset(request.POST)
             #     errorMessages = fullValidation(request, formset) 
@@ -83,18 +75,6 @@ def getCurrentUser(request):
     userLoggedIn = request.user.username
     currentUser = User.objects.filter(username=userLoggedIn).first()
     return currentUser
-
-# def formsetWithDataFromDB(currentUser):
-#     ParticipantsFormset = inlineformset_factory(User, Participant, form=ParticipantsForm, extra=1)
-#     formset = ParticipantsFormset(instance=currentUser)
-#     return formset
-
-# def deleteRowFromDB(request, currentUser):
-#     rowNumber = int(request.POST['delete']) - 1
-#     email = request.POST[f'participant_set-{rowNumber}-email']
-#     rowToDelete = currentUser.participant_set.get(email=email)
-#     rowToDelete.delete()
-#     return rowToDelete
 
 def deleteRowFromDB(request, currentUser):
     rowNumber = int(request.POST['deleteAddSubtractSaveOrDraw']) - 1
