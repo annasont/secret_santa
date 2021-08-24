@@ -45,11 +45,11 @@ def profile(request):
         
         if request.method == 'POST':
 
-            if request.POST.get('deleteAddSubtractSaveOrDraw') != '' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'save' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'draw':
+            if request.POST.get('deleteAddOrDraw') != '' and request.POST.get('deleteAddOrDraw') != 'add' and request.POST.get('deleteAddOrDraw') != 'draw':
                 rowToDelete = deleteRowFromDB(request, currentUser)
                 messages.success(request, f'Participant {rowToDelete} has been successfully deleted from database.')
 
-            elif request.POST.get('deleteAddSubtractSaveOrDraw') == 'save':
+            elif request.POST.get('deleteAddOrDraw') == 'add':
                 name, email, form = getFormData(request, currentUser)
 
                 if form.is_valid():
@@ -77,7 +77,7 @@ def getCurrentUser(request):
     return currentUser
 
 def deleteRowFromDB(request, currentUser):
-    rowNumber = int(request.POST['deleteAddSubtractSaveOrDraw']) - 1
+    rowNumber = int(request.POST['deleteAddOrDraw']) - 1
     rowToDelete = currentUser.participant_set.all()[rowNumber]
     rowToDelete.delete()
     return rowToDelete
