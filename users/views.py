@@ -49,7 +49,7 @@ def profile(request):
         
 
         rowToDelete = ''
-        errorMessages = False
+        # errorMessages = False
         if request.method == 'POST':
 
             if request.POST.get('deleteAddSubtractSaveOrDraw') != '' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'save' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'draw':
@@ -57,25 +57,13 @@ def profile(request):
                 messages.success(request, f'Participant {rowToDelete} has been successfully deleted from database.')
 
             elif request.POST.get('deleteAddSubtractSaveOrDraw') == 'save':
-                name = request.POST['name']
-                email = request.POST['email']
-                form = ParticipantsForm({'name': name, 'email': email, 'user': currentUser})
+                name, email, form = getFormData(request, currentUser)
+
                 if form.is_valid():
-                    try:
-                        if currentUser.participant_set.get(name=name):
-                            messages.error(request, 'Person with that name already exists')
-                            errorMessages = True
-                    except ObjectDoesNotExist:
-                        pass
+                    errorMessageName = doNotAcceptSameNames(request, currentUser, name)
+                    errorMessageEmail = doNotAcceptSameEmails(request, currentUser, email)
 
-                    try:
-                        if currentUser.participant_set.get(email=email):
-                            messages.error(request, 'Person with that email already exists')
-                            errorMessages = True
-                    except ObjectDoesNotExist:
-                        pass
-
-                    if errorMessages == False:
+                    if errorMessageName == False and errorMessageEmail == False:
                         form.save()
                         form = ParticipantsForm()
                     
@@ -113,3 +101,27 @@ def deleteRowFromDB(request, currentUser):
     rowToDelete = currentUser.participant_set.all()[rowNumber]
     rowToDelete.delete()
     return rowToDelete
+
+def getFormData(request, currentUser):
+    name = request.POST['name']
+    email = request.POST['email']
+    form = ParticipantsForm({'name': name, 'email': email, 'user': currentUser})
+    return name, email, form
+
+def doNotAcceptSameNames(request, currentUser, name):
+    try:
+        if currentUser.participant_set.get(name=name):
+            messages.error(request, 'Person with that name already exists')
+            errorMessageName = True
+            return errorMessageName
+    except ObjectDoesNotExist:
+        errorMessageName = False
+
+def doNotAcceptSameEmails(request, currentUser, email):
+    try:
+        if currentUser.participant_set.get(email=email):
+            messages.error(request, 'Person with that email already exists')
+            errorMessageEmail = True
+            return errorMessageEmail
+    except ObjectDoesNotExist:
+        errorMessageEmail = False
