@@ -42,6 +42,7 @@ def profile(request):
         participants = currentUser.participant_set.all()
         form = ParticipantsForm()
         test = ''
+        group = ''
         
         if request.method == 'POST':
 
@@ -60,14 +61,17 @@ def profile(request):
                         form.save()
                         form = ParticipantsForm()
                            
-            # elif request.POST.get('addSubtractOrDraw') == 'draw':
+            elif request.POST.get('deleteAddOrDraw') == 'draw':
+                group = createDictWithDataFromDB(currentUser)
+
             #     formset = ParticipantsFormset(request.POST)
             #     errorMessages = fullValidation(request, formset) 
 
     context = {
         'form': form,
         'participants': participants,
-        'test': test
+        'test': test,
+        'group': group
     }
     return render (request, 'users/profile.html', context)
 
@@ -105,3 +109,11 @@ def doNotAcceptSameEmails(request, currentUser, email):
             return errorMessageEmail
     except ObjectDoesNotExist:
         errorMessageEmail = False
+
+def createDictWithDataFromDB(currentUser):
+    '''creating dictionary with participatns names and emails in following format:
+    group['name'] = {'email': 'email@example.com'}'''
+    group = {}
+    for i in range(len(currentUser.participant_set.all())):
+        group[currentUser.participant_set.all()[i].name] = {'email': currentUser.participant_set.all()[i].email}
+    return group
