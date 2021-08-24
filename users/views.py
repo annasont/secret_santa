@@ -63,7 +63,7 @@ def profile(request):
                     errorMessageName = doNotAcceptSameNames(request, currentUser, name)
                     errorMessageEmail = doNotAcceptSameEmails(request, currentUser, email)
 
-                    if errorMessageName == False and errorMessageEmail == False:
+                    if errorMessageName != True and errorMessageEmail != True:
                         form.save()
                         form = ParticipantsForm()
                     
