@@ -2,12 +2,13 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from django.forms import inlineformset_factory
+# from django.forms import inlineformset_factory
 from django.contrib.auth.models import User
 from .forms import UserRegisterForm, UserLoginForm
 from draw.forms import ParticipantsForm
-from draw.models import Participant
-from draw.views import checkForStandartFormsetErrors
+from django.core.exceptions import ObjectDoesNotExist
+# from draw.models import Participant
+
 
 def register(request):
     if request.method == 'POST':
@@ -48,7 +49,7 @@ def profile(request):
         
 
         rowToDelete = ''
-        errorMessages = ''
+        errorMessages = False
         if request.method == 'POST':
 
             if request.POST.get('deleteAddSubtractSaveOrDraw') != '' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'save' and request.POST.get('deleteAddSubtractSaveOrDraw') != 'draw':
@@ -60,19 +61,23 @@ def profile(request):
                 email = request.POST['email']
                 form = ParticipantsForm({'name': name, 'email': email, 'user': currentUser})
                 if form.is_valid():
-                    if currentUser.participant_set.get(name=name):
-                        messages.error(request, 'Person with that name already exists')
-                    elif currentUser.participant_set.get(email=email):
-                        messages.error(request, 'Person with that email already exists')
-                    else:
+                    try:
+                        if currentUser.participant_set.get(name=name):
+                            messages.error(request, 'Person with that name already exists')
+                            errorMessages = True
+                    except ObjectDoesNotExist:
+                        pass
+
+                    try:
+                        if currentUser.participant_set.get(email=email):
+                            messages.error(request, 'Person with that email already exists')
+                            errorMessages = True
+                    except ObjectDoesNotExist:
+                        pass
+
+                    if errorMessages == False:
                         form.save()
                         form = ParticipantsForm()
-            #     else:
-            #         errorMessages = checkForStandartFormsetErrors(form)
-
-            # # Displaying all errors
-            # for message in errorMessages:
-            #     messages.error(request, message)
                     
             
             # elif request.POST.get('addSubtractOrDraw') == 'draw':
