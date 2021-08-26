@@ -1,13 +1,13 @@
 from django.contrib.messages.api import error
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .forms import ParticipantsForm
+from .forms import ParticipantFormNotLoggedIn
 from django.forms import formset_factory
 from django.core.mail import send_mail
 import random
 
 def home(request):
-    ParticipantsFormset = formset_factory(ParticipantsForm, extra=3)
+    ParticipantsFormset = formset_factory(ParticipantFormNotLoggedIn, extra=3)
 
     if request.method == 'POST':
         if request.POST['addSubtractOrDraw'] == 'add':
@@ -54,7 +54,7 @@ def createDictWithAllParticipatsNamesAndEmails(group):
 
 def generateEmptyForm(ParticipantsFormset):
     noOfRows = 3
-    ParticipantsFormset = formset_factory(ParticipantsForm, extra=noOfRows)
+    ParticipantsFormset = formset_factory(ParticipantFormNotLoggedIn, extra=noOfRows)
     formset = ParticipantsFormset()
     return formset
 
@@ -95,7 +95,7 @@ def checkForStandartFormsetErrors(formset):
 def translatingStandartFormsetErrorsToPolish(errorMsg):
     errorMessages = []
     if ['This field is required.'] in errorMsg:
-        errorMessages.append('Fill out missing fields.')
+        errorMessages.append('Fill out missing fileds.')
     if ['Enter a valid email address.'] in errorMsg:
         errorMessages.append('Enter a valid email address.')
     return errorMessages
