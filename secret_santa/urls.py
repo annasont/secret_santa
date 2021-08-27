@@ -15,9 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.urls import path, include
+from django.urls import path, re_path, include
 from users import views as users_views
-#from draw import views as draw_views
 
 
 urlpatterns = [
@@ -26,5 +25,12 @@ urlpatterns = [
     path('profile/', users_views.profile, name='profile'),
     path('login/', users_views.loginUser, name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
+    path('password-reset/', 
+        auth_views.PasswordResetView.as_view(template_name='users/password_reset.html'),
+        name='password_reset'),
+    re_path('password-reset/done/', 
+        auth_views.PasswordResetDoneView.as_view(template_name='users/password_reset_done.html'),
+        name='password_reset_done'),
     path('', include('draw.urls')),
+    # re_path('', include('django.contrib.auth.urls')),
 ]
