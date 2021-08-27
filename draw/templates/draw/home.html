@@ -2,7 +2,13 @@
 {% block content %}
     <div class="container pt-2">
         <h2>Draw names online</h2>
-        <p class="lead">Insert names and emails to people who will take part in Secret Santa drawing. Every participant will get an email with the further instructions. <a href={% url 'login'%}>Log in</a> if you want to save data for later.</p>
+        <p class="lead">Insert names and emails to people who will take part in Secret Santa drawing. Every participant will get an email with the further instructions. 
+        {% if user.is_authenticated %}
+            Go to <a href={% url 'profile'%}>Profile page</a>
+        {% else %}
+            <a href={% url 'login'%}>Log in</a>            
+        {% endif %}
+        if you want to save data for later.</p>
      
         <form id="namesAndEmails" class="row g-3" method="POST">
             {{ formset.management_form }}

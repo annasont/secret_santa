@@ -196,7 +196,7 @@ def prepareDataForSendingEmail(pairs, group, i):
     personWhom = pairs[i][1]
     sendTo = group[personWho]['email']
     title = 'Secret santa drawing'
-    mailMessage = f'Hi {personWho}\nYou are taking part in a Secret Santa drawing. \nMake a gift for: {personWhom}.\nKind regards,\nSecret santa'
+    mailMessage = f'Hi {personWho}!\nYou are taking part in a Secret Santa drawing. \nMake a gift for: {personWhom}.\n\nKind regards,\nSecret Santa'
     return title, mailMessage, sendTo
 
 def sendEmail(title, mailMessage, sendTo):
