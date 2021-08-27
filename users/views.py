@@ -63,14 +63,18 @@ def profile(request):
                            
             elif request.POST.get('deleteAddOrDraw') == 'draw':
                 group = createDictWithDataFromDB(currentUser)
-                pairs = findRandomPairs(group)
-                
-                """send emails"""
-                errorMessagesFromSendingEmail = sendEmailToEveryParticipant(pairs, group)
-                if True in errorMessagesFromSendingEmail:
-                    generateErrorIfSendingEmailFails(request)
+
+                if len(group) < 3:
+                    messages.error(request, f'There must be at least 3 participants.')
                 else:
-                    return redirectToDrawingResultPage(group, request) 
+                    pairs = findRandomPairs(group)
+                    
+                    """send emails"""
+                    errorMessagesFromSendingEmail = sendEmailToEveryParticipant(pairs, group)
+                    if True in errorMessagesFromSendingEmail:
+                        generateErrorIfSendingEmailFails(request)
+                    else:
+                        return redirectToDrawingResultPage(group, request) 
 
 
     context = {
