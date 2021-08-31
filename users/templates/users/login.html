@@ -1,0 +1,43 @@
+{% extends "draw/base.html" %}
+{% block content %}
+    <div class="container pt-2">
+        <h2>Log in</h2>
+        <form method='POST'>
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <div>
+                    {% if form.errors %}
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <div class="alert alert-danger">{{ error|escape }}</div>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <div class="alert alert-danger">{{ error|escape }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="form-group mb-2">
+                    <label>{{ form.username.label }}</label>
+                    <div>{{ form.username }}</div>
+                </div>
+                <div class="form-group mb-3">
+                    <label>{{ form.password.label }}</label>
+                    <div>{{ form.password }}</div>
+                </div>
+            </fieldset>
+            <div class="form-group mb-3">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+            <div>
+                <small class="text-muted mt-3">
+                    <p>
+                        Need an account? <a href={% url 'register'%}>Sign up </a>
+                    </p>
+                    <p>
+                        Forgotten your password? <a href={% url 'password_reset'%}>Reset password </a>
+                    </p>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

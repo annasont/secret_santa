@@ -1,19 +1,17 @@
 {% extends "draw/base.html" %}
-{% load crispy_forms_tags %}
 {% block content %}
-    <div class="container pt-5">
-        <div class="jumbotron">
-            <h1 class="display-4">Komu zrobić prezent?</h1>
-            <p class="lead">Przeprowadź losowanie "secret santa": Wpisz imiona osób, które biorą udział w losowaniu, oraz ich adresy e-mail. Każdy z uczestników otrzyma maila z imieniem wylosowanej osoby, której będzie robić prezent.</p>
-        </div>
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-            {% endfor %}
+    <div class="container pt-2">
+        <h2>Draw names online</h2>
+        <p class="lead">Insert names and emails to people who will take part in Secret Santa drawing. Every participant will get an email with the further instructions. 
+        {% if user.is_authenticated %}
+            Go to <a href={% url 'profile'%}>Profile page</a>
+        {% else %}
+            <a href={% url 'login'%}>Log in</a>            
         {% endif %}
+        if you want to save data for later.</p>
      
         <form id="namesAndEmails" class="row g-3" method="POST">
-            {{ formset.management_form|crispy }}
+            {{ formset.management_form }}
             {% csrf_token %}
             <fieldset class="form-group">
                 {% for form in formset %}
@@ -31,9 +29,9 @@
                 {% endfor %}
             </fieldset>
             <div class="row mt-3">
-                <button type="submit" class="btn btn-primary mb-3 rememberScrollPos" name="addSubtractOrDraw" value="add">+ Dodaj kolejną osobę</button>
-                <button type="submit" class="btn btn-primary mb-3 rememberScrollPos" name="addSubtractOrDraw" value="subtract" >– Usuń ostatni rząd</button>
-                <button type="submit" class="btn btn-warning" name="addSubtractOrDraw" value="draw">Losuj</button>
+                <button type="submit" class="btn btn-primary mb-3 rememberScrollPos" name="addSubtractOrDraw" value="add">+ Add person</button>
+                <button type="submit" class="btn btn-primary mb-3 rememberScrollPos" name="addSubtractOrDraw" value="subtract" >– Remove last row</button>
+                <button type="submit" class="btn btn-warning" name="addSubtractOrDraw" value="draw">Draw</button>
             </div> 
         </form> 
     </div>

@@ -1,13 +1,13 @@
 from django.contrib.messages.api import error
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .forms import ParticipantsForm
+from .forms import ParticipantFormNotLoggedIn
 from django.forms import formset_factory
 from django.core.mail import send_mail
 import random
 
 def home(request):
-    ParticipantsFormset = formset_factory(ParticipantsForm, extra=3)
+    ParticipantsFormset = formset_factory(ParticipantFormNotLoggedIn, extra=3)
 
     if request.method == 'POST':
         if request.POST['addSubtractOrDraw'] == 'add':
@@ -54,7 +54,7 @@ def createDictWithAllParticipatsNamesAndEmails(group):
 
 def generateEmptyForm(ParticipantsFormset):
     noOfRows = 3
-    ParticipantsFormset = formset_factory(ParticipantsForm, extra=noOfRows)
+    ParticipantsFormset = formset_factory(ParticipantFormNotLoggedIn, extra=noOfRows)
     formset = ParticipantsFormset()
     return formset
 
@@ -74,7 +74,7 @@ def subtractRowSuccess(request, ParticipantsFormset):
 def warningAtLeast3Participants(request, ParticipantsFormset):
     requestPostData = request.POST.copy()
     formset = ParticipantsFormset(requestPostData)
-    error = messages.warning(request, 'Liczba osób nie może być mniejsza niż 3.')
+    error = messages.warning(request, 'There must be at least 3 participants.')
     return formset, error
 
 def subtractRow(request, ParticipantsFormset):
@@ -95,9 +95,9 @@ def checkForStandartFormsetErrors(formset):
 def translatingStandartFormsetErrorsToPolish(errorMsg):
     errorMessages = []
     if ['This field is required.'] in errorMsg:
-        errorMessages.append('Uzupełnij brakujące pola.')
+        errorMessages.append('Fill out missing fileds.')
     if ['Enter a valid email address.'] in errorMsg:
-        errorMessages.append('Niepoprawny adres email.')
+        errorMessages.append('Enter a valid email address.')
     return errorMessages
 
 def finalFormsetErrors(formset):
@@ -117,7 +117,7 @@ def doNotAcceptEmptyRows(request):
     errorMessages = []
     for i in range(int(request.POST['form-TOTAL_FORMS'])):
         if request.POST[f'form-{i}-name'] == '' and request.POST[f'form-{i}-email'] == '':
-            text = 'Uzupełnij brakujące rzędy.'
+            text = 'Fill out missing rows.'
             if text not in errorMessages:
                 errorMessages.append(text)
     return errorMessages
@@ -129,7 +129,7 @@ def doNotAcceptSameNames(request):
         if request.POST[f'form-{i}-name'] == '':
             continue
         elif request.POST[f'form-{i}-name'] in names:
-            text = 'Imiona nie mogą się powtarzać (jeżeli w losowaniu biorą udział osoby o tych samych imionach, wpisz ksywy / nazwiska / coś co pozwoli zidentyfikować właściwą osobę).'
+            text = 'Names cannot be repeated (If you have participants with the same names – use nicknames or surnames).'
             if text not in errorMessages:
                 errorMessages.append(text)
         else:
@@ -143,7 +143,7 @@ def doNotAcceptSameEmailAddresses(request):
         if request.POST[f'form-{i}-email'] == '':
             continue
         if request.POST[f'form-{i}-email'] in emails:
-            text = 'Adresy email nie mogą się powtarzać.'
+            text = 'Emails cannot be repeated.'
             if text not in errorMessages:
                 errorMessages.append(text)   
         else:
@@ -195,10 +195,9 @@ def prepareDataForSendingEmail(pairs, group, i):
     personWho = pairs[i][0]
     personWhom = pairs[i][1]
     sendTo = group[personWho]['email']
-    title = 'Losowanie secret santa'
-    mailMessage = f'Cześć {personWho}\nBierzesz udział w losownaniu secret santa.\nOsoba, której robisz prezent to: {personWhom}.\nPozdrawiam,\nSecret santa'
+    title = 'Secret santa drawing'
+    mailMessage = f'Hi {personWho}!\nYou are taking part in a Secret Santa drawing. \nMake a gift for: {personWhom}.\n\nKind regards,\nSecret Santa'
     return title, mailMessage, sendTo
-
 
 def sendEmail(title, mailMessage, sendTo):
     try:
@@ -216,7 +215,7 @@ def sendEmailToEveryParticipant(pairs, group):
     return errorMessagesFromSendingEmail
 
 def generateErrorIfSendingEmailFails(request):
-    messages.error(request, 'Wystąpił problem z wysłaniem maili. Spróbuj ponownie później.')
+    messages.error(request, 'There has been a problem with sending email. Ty again later.')
 
 def createDictWithFormData(request):
     '''creating dictionary with participatns names and emails in following format:

@@ -29,20 +29,21 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = (os.environ.get('DEBUG_VALUE') == 'True')
 
-ALLOWED_HOSTS = ['drawsecretsanta.herokuapp.com']
+ALLOWED_HOSTS = ['localhost']
 
 
 # Application definition
 
 INSTALLED_APPS = [
     'draw.apps.DrawConfig',
+    'users.apps.UsersConfig',
     'crispy_forms',
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.admin',
 ]
 
 MIDDLEWARE = [
@@ -94,7 +95,7 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [
+PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
@@ -140,3 +141,5 @@ EMAIL_HOST_USER = os.environ.get('SECRETSANTA_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('SECRETSANTA_PASS')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+LOGIN_URL = 'login'
