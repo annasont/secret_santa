@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 from django.contrib.messages import constants as messages
 import os
+import django_heroku
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -143,3 +144,5 @@ EMAIL_HOST_PASSWORD = os.environ.get('SECRETSANTA_PASS')
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 LOGIN_URL = 'login'
+
+django_heroku.settings(locals())
